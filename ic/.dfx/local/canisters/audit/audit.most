@@ -1,6 +1,0 @@
-// Version: 1.0.0
-type AuditEvent__219590677 =
-  {data : Text; kind : Text; source : Text; ts : Nat64};
-actor {
-  stable var eventsArray : [AuditEvent__219590677]
-};

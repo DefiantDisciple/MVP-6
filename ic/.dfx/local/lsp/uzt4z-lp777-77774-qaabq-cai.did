@@ -1,5 +1,0 @@
-service : {
-  create_escrow: (tender_id: nat, amount: nat64, currency: text) -> (text);
-  mirror_event: (kind: text, payload: text) -> (bool);
-  release_payment: (escrow_ref: text) -> (bool);
-}
