@@ -1,0 +1,16 @@
+type TenderSummary = 
+ record {
+   closing_ts: nat64;
+   tender_id: nat;
+   title: text;
+ };
+type SubmitBidResult = record {bid_id: nat;};
+type CreateTenderResult = record {tender_id: nat;};
+service : {
+  award_tender: (tender_id: nat, winner_bid_id: nat) -> (bool);
+  create_tender: (title: text, description: text, closing_ts: nat64) ->
+   (CreateTenderResult);
+  list_open_tenders: () -> (vec TenderSummary) query;
+  submit_bid: (tender_id: nat, amount: nat64, doc_hash: text) ->
+   (SubmitBidResult);
+}

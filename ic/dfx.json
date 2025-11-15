@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "canisters": {
+    "core": {
+      "type": "motoko",
+      "main": "core/main.mo"
+    },
+    "escrow-adapter": {
+      "type": "motoko",
+      "main": "escrow-adapter/main.mo"
+    },
+    "audit": {
+      "type": "motoko",
+      "main": "audit/main.mo"
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:4943",
+      "type": "ephemeral"
+    },
+    "ic": {
+      "providers": ["https://ic0.app"],
+      "type": "persistent"
+    }
+  }
+}

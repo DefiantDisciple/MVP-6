@@ -1,0 +1,11 @@
+type AuditEvent = record {
+  ts: nat64;
+  source: text;
+  kind: text;
+  data: text;
+};
+
+service : {
+  append_event: (source: text, kind: text, data: text) -> (bool);
+  get_events: (limit: nat) -> (vec AuditEvent) query;
+}
