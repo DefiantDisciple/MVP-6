@@ -6,6 +6,18 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/landing',
+        permanent: false,
+      },
+    ];
+  },
 }
 
 export default nextConfig
