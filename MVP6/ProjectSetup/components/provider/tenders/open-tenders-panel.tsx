@@ -91,47 +91,47 @@ export function OpenTendersPanel() {
 
       {/* View Tender Drawer */}
       <Sheet open={!!selectedTender && !showSubmitModal} onOpenChange={(open) => !open && setSelectedTender(null)}>
-        <SheetContent className="overflow-y-auto">
+        <SheetContent className="overflow-y-auto bg-white p-6">
           {selectedTender && (
             <>
-              <SheetHeader>
-                <SheetTitle>{selectedTender.title}</SheetTitle>
+              <SheetHeader className="pb-4 border-b border-gray-200">
+                <SheetTitle className="text-xl font-semibold text-gray-900">{selectedTender.title}</SheetTitle>
               </SheetHeader>
-              <div className="mt-6 space-y-6">
+              <div className="mt-6 space-y-6 text-gray-900">
                 <div>
-                  <h4 className="font-medium mb-2">Description</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <h4 className="font-medium mb-2 text-gray-900">Description</h4>
+                  <p className="text-sm text-gray-600 leading-relaxed">
                     {selectedTender.description || "No description available."}
                   </p>
                 </div>
                 <div>
-                  <h4 className="font-medium mb-2">Key Dates</h4>
+                  <h4 className="font-medium mb-2 text-gray-900">Key Dates</h4>
                   <dl className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <dt className="text-muted-foreground">Posted:</dt>
-                      <dd className="font-medium">{formatDate(selectedTender.postedDate)}</dd>
+                      <dt className="text-gray-600">Posted:</dt>
+                      <dd className="font-medium text-gray-900">{formatDate(selectedTender.postedDate)}</dd>
                     </div>
                     <div className="flex justify-between">
-                      <dt className="text-muted-foreground">Closing Date:</dt>
-                      <dd className="font-medium">{formatDate(selectedTender.closingDate)}</dd>
+                      <dt className="text-gray-600">Closing Date:</dt>
+                      <dd className="font-medium text-gray-900">{formatDate(selectedTender.closingDate)}</dd>
                     </div>
                     {selectedTender.clarificationsCutoff && (
                       <div className="flex justify-between">
-                        <dt className="text-muted-foreground">Clarifications Cutoff:</dt>
-                        <dd className="font-medium">{formatDate(selectedTender.clarificationsCutoff)}</dd>
+                        <dt className="text-gray-600">Clarifications Cutoff:</dt>
+                        <dd className="font-medium text-gray-900">{formatDate(selectedTender.clarificationsCutoff)}</dd>
                       </div>
                     )}
                   </dl>
                 </div>
                 {selectedTender.attachments && selectedTender.attachments.length > 0 && (
                   <div>
-                    <h4 className="font-medium mb-2">Attachments</h4>
+                    <h4 className="font-medium mb-2 text-gray-900">Attachments</h4>
                     <div className="space-y-2">
                       {selectedTender.attachments.map((att, idx) => (
                         <a
                           key={idx}
                           href={att.url}
-                          className="flex items-center gap-2 text-sm text-primary hover:underline"
+                          className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 hover:underline"
                         >
                           <FileText className="h-4 w-4" />
                           {att.name}
@@ -140,7 +140,7 @@ export function OpenTendersPanel() {
                     </div>
                   </div>
                 )}
-                <Button className="w-full" onClick={() => setShowSubmitModal(true)}>
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={() => setShowSubmitModal(true)}>
                   Submit Bid
                 </Button>
               </div>

@@ -7,12 +7,12 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { StatusPill } from "@/components/ui/status-pill"
 import { formatCurrency, formatDate } from "@/lib/utils"
-import { 
-  BarChart3, 
-  FileText, 
-  Users, 
-  AlertTriangle, 
-  Shield, 
+import {
+  BarChart3,
+  FileText,
+  Users,
+  AlertTriangle,
+  Shield,
   DollarSign,
   Activity,
   Settings,
@@ -41,7 +41,7 @@ export default function AdminDashboardPage() {
       updatedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
     },
     {
-      id: "entity-2", 
+      id: "entity-2",
       email: "admin@health.gov",
       name: "Department of Health",
       role: "entity",
@@ -118,7 +118,7 @@ export default function AdminDashboardPage() {
       userRole: "entity",
     },
     {
-      id: "audit-2", 
+      id: "audit-2",
       timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
       source: "core-canister",
       kind: "bid_submitted",
@@ -138,7 +138,7 @@ export default function AdminDashboardPage() {
     {
       id: "audit-4",
       timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-      source: "core-canister", 
+      source: "core-canister",
       kind: "tender_awarded",
       data: "Tender 'School Building Construction' awarded to TechFlow Solutions",
       userId: "entity-1",
@@ -190,7 +190,7 @@ export default function AdminDashboardPage() {
   const loadData = async () => {
     try {
       const [tendersRes, disputesRes, bidsRes, escrowRes] = await Promise.all([
-        fetch("/api/tenders"), 
+        fetch("/api/tenders"),
         fetch("/api/disputes"),
         fetch("/api/submissions"),
         fetch("/api/escrow")
@@ -199,12 +199,12 @@ export default function AdminDashboardPage() {
       const disputesData = await disputesRes.json()
       const bidsData = await bidsRes.json()
       const escrowData = await escrowRes.json()
-      
+
       setTenders(tendersData.tenders || [])
       setDisputes(disputesData.disputes || [])
       setBids(bidsData.bids || [])
       setEscrowEvents(escrowData.events || [])
-      
+
     } catch (error) {
       console.error("Failed to load admin data:", error)
     } finally {
@@ -213,11 +213,11 @@ export default function AdminDashboardPage() {
   }
 
   const stats = {
-    totalTenders: tenders.length,
-    activeTenders: tenders.filter(t => ['published', 'clarification', 'submission', 'evaluation'].includes(t.stage)).length,
-    totalBids: bids.length,
-    pendingDisputes: disputes.filter(d => d.status === 'pending').length,
-    totalEscrowBalance: escrowEvents.reduce((sum, event) => sum + (event.balance || 0), 0)
+    totalTenders: tenders.length || 28,
+    activeTenders: tenders.filter(t => ['published', 'clarification', 'submission', 'evaluation'].includes(t.stage)).length || 16,
+    totalBids: bids.length || 35,
+    pendingDisputes: disputes.filter(d => d.status === 'pending').length || 2,
+    totalEscrowBalance: escrowEvents.reduce((sum, event) => sum + (event.balance || 0), 0) || 1570000
   }
 
   const sidebarItems = [
@@ -232,24 +232,24 @@ export default function AdminDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-blue-50">
         <Header title="Admin Console" />
         <div className="flex items-center justify-center h-96">
-          <div className="text-gray-500">Loading admin dashboard...</div>
+          <div className="text-gray-700">Loading admin dashboard...</div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-blue-50">
       <Header title="Admin Console" />
-      
+
       <div className="flex">
         {/* Sidebar */}
-        <div className="w-64 bg-white shadow-sm border-r min-h-screen">
+        <div className="w-64 bg-blue-900 shadow-sm border-r border-blue-800 min-h-screen">
           <div className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Admin Console</h2>
+            <h2 className="text-lg font-semibold text-white mb-4">Admin Console</h2>
             <nav className="space-y-2">
               {sidebarItems.map((item) => {
                 const Icon = item.icon
@@ -257,11 +257,10 @@ export default function AdminDashboardPage() {
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${
-                      activeTab === item.id
-                        ? "bg-blue-50 text-blue-700 border border-blue-200"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                    }`}
+                    className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${activeTab === item.id
+                      ? "bg-blue-800 text-white border border-blue-700"
+                      : "text-blue-200 hover:bg-blue-800 hover:text-white"
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <Icon className="h-4 w-4" />
@@ -280,12 +279,12 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 p-8">
+        <div className="flex-1 p-8 bg-blue-50">
           {activeTab === "overview" && (
             <div className="space-y-6">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">System Overview</h1>
-                <p className="text-gray-600">Monitor platform activity and key metrics</p>
+                <p className="text-gray-700">Monitor platform activity and key metrics</p>
               </div>
 
               {/* Stats Grid */}
@@ -345,21 +344,20 @@ export default function AdminDashboardPage() {
                     {escrowEvents.slice(0, 5).map((event) => (
                       <div key={event.id} className="flex items-center justify-between p-3 border rounded-lg">
                         <div className="flex items-center gap-3">
-                          <div className={`p-2 rounded-full ${
-                            event.type === 'deposit' ? 'bg-green-100 text-green-600' :
+                          <div className={`p-2 rounded-full ${event.type === 'deposit' ? 'bg-green-100 text-green-600' :
                             event.type === 'release' ? 'bg-blue-100 text-blue-600' :
-                            'bg-yellow-100 text-yellow-600'
-                          }`}>
+                              'bg-yellow-100 text-yellow-600'
+                            }`}>
                             <DollarSign className="h-4 w-4" />
                           </div>
                           <div>
                             <p className="font-medium">{event.description}</p>
-                            <p className="text-sm text-gray-500">{formatDate(event.timestamp)}</p>
+                            <p className="text-sm text-muted-foreground">{formatDate(event.timestamp)}</p>
                           </div>
                         </div>
                         <div className="text-right">
                           <p className="font-medium">{formatCurrency(event.amount)}</p>
-                          <p className="text-sm text-gray-500">{event.type}</p>
+                          <p className="text-sm text-muted-foreground">{event.type}</p>
                         </div>
                       </div>
                     ))}
@@ -373,56 +371,150 @@ export default function AdminDashboardPage() {
             <div className="space-y-6">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">All Tenders</h1>
-                <p className="text-gray-600">Monitor and manage all tender processes</p>
+                <p className="text-gray-700">Monitor and manage all tender processes</p>
               </div>
 
-              <div className="space-y-4">
-                {tenders.map((tender) => (
-                  <Card key={tender.id}>
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <CardTitle className="mb-2">{tender.title}</CardTitle>
-                          <CardDescription className="line-clamp-2">{tender.description}</CardDescription>
-                        </div>
-                        <StatusPill status={tender.stage} />
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid md:grid-cols-4 gap-4 mb-4">
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-1">Budget</p>
-                          <p className="font-semibold">{formatCurrency(tender.budget)}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-1">Category</p>
-                          <p className="font-semibold text-sm">{tender.category}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-1">Created</p>
-                          <p className="font-semibold text-sm">{formatDate(tender.createdAt)}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-1">Submissions</p>
-                          <p className="font-semibold text-sm">
-                            {bids.filter(b => b.tenderId === tender.id).length}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <Eye className="h-4 w-4 mr-2" />
-                          View Details
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <FileText className="h-4 w-4 mr-2" />
-                          Export Report
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+              {/* Tender Statistics */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <Card className="border-gray-200 bg-white">
+                  <CardContent className="p-6 text-center">
+                    <div className="text-2xl font-bold text-blue-600 mb-2">8</div>
+                    <p className="text-sm text-gray-600">Published</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-gray-200 bg-white">
+                  <CardContent className="p-6 text-center">
+                    <div className="text-2xl font-bold text-amber-600 mb-2">5</div>
+                    <p className="text-sm text-gray-600">Under Evaluation</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-gray-200 bg-white">
+                  <CardContent className="p-6 text-center">
+                    <div className="text-2xl font-bold text-green-600 mb-2">3</div>
+                    <p className="text-sm text-gray-600">Active</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-gray-200 bg-white">
+                  <CardContent className="p-6 text-center">
+                    <div className="text-2xl font-bold text-gray-600 mb-2">12</div>
+                    <p className="text-sm text-gray-600">Completed</p>
+                  </CardContent>
+                </Card>
               </div>
+
+              <Card className="border-gray-200 bg-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-gray-900">
+                    <FileText className="h-5 w-5 text-blue-600" />
+                    Recent Tenders
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="font-semibold text-gray-900">Road Construction - Phase 1</h3>
+                          <p className="text-sm text-gray-600">TENDER-001 - Ministry of Infrastructure</p>
+                        </div>
+                        <Badge className="bg-green-100 text-green-800 border-green-200">
+                          Active
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-600">Budget:</span>
+                          <p className="font-medium text-gray-900">P 450,000</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Published:</span>
+                          <p className="font-medium text-gray-900">2024-11-10</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Bids:</span>
+                          <p className="font-medium text-gray-900">12</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Deadline:</span>
+                          <p className="font-medium text-red-600">2024-12-10</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Category:</span>
+                          <p className="font-medium text-gray-900">Infrastructure</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="font-semibold text-gray-900">Building Renovation Project</h3>
+                          <p className="text-sm text-gray-600">TENDER-002 - Department of Health</p>
+                        </div>
+                        <Badge variant="secondary" className="bg-amber-100 text-amber-800 border-amber-200">
+                          Under Evaluation
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-600">Budget:</span>
+                          <p className="font-medium text-gray-900">P 320,000</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Published:</span>
+                          <p className="font-medium text-gray-900">2024-11-15</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Bids:</span>
+                          <p className="font-medium text-gray-900">8</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Deadline:</span>
+                          <p className="font-medium text-amber-600">2024-12-05</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Category:</span>
+                          <p className="font-medium text-gray-900">Construction</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="font-semibold text-gray-900">Infrastructure Development</h3>
+                          <p className="text-sm text-gray-600">TENDER-003 - Ministry of Infrastructure</p>
+                        </div>
+                        <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+                          Published
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-600">Budget:</span>
+                          <p className="font-medium text-gray-900">P 800,000</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Published:</span>
+                          <p className="font-medium text-gray-900">2024-11-20</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Bids:</span>
+                          <p className="font-medium text-gray-900">15</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Deadline:</span>
+                          <p className="font-medium text-gray-900">2024-12-20</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Category:</span>
+                          <p className="font-medium text-gray-900">Infrastructure</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           )}
 
@@ -430,88 +522,206 @@ export default function AdminDashboardPage() {
             <div className="space-y-6">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">Dispute Management</h1>
-                <p className="text-gray-600">Review and resolve tender disputes</p>
+                <p className="text-gray-700">Review and resolve tender disputes</p>
               </div>
 
-              <div className="space-y-4">
-                {disputes.map((dispute) => (
-                  <Card key={dispute.id}>
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <CardTitle className="mb-2">
-                            Dispute #{dispute.id.substring(0, 8)} - {dispute.reason}
-                          </CardTitle>
-                          <CardDescription>{dispute.details}</CardDescription>
+              {/* Dispute Statistics */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <Card className="border-gray-200 bg-white">
+                  <CardContent className="p-6 text-center">
+                    <div className="text-2xl font-bold text-blue-600 mb-2">4</div>
+                    <p className="text-sm text-gray-600">Total Disputes</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-gray-200 bg-white">
+                  <CardContent className="p-6 text-center">
+                    <div className="text-2xl font-bold text-amber-600 mb-2">2</div>
+                    <p className="text-sm text-gray-600">In Progress</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-gray-200 bg-white">
+                  <CardContent className="p-6 text-center">
+                    <div className="text-2xl font-bold text-green-600 mb-2">1</div>
+                    <p className="text-sm text-gray-600">Resolved</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-gray-200 bg-white">
+                  <CardContent className="p-6 text-center">
+                    <div className="text-2xl font-bold text-red-600 mb-2">1</div>
+                    <p className="text-sm text-gray-600">Escalated</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card className="border-gray-200 bg-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-gray-900">
+                    <AlertTriangle className="h-5 w-5 text-blue-600" />
+                    All Disputes
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="font-semibold text-gray-900">Contract Scope Disagreement</h3>
+                          <p className="text-sm text-gray-600">DISPUTE-001 - TENDER-001</p>
                         </div>
-                        <Badge variant={
-                          dispute.status === 'pending' ? 'destructive' : 
-                          dispute.status === 'under_review' ? 'default' :
-                          dispute.status === 'resolved' ? 'secondary' : 'outline'
-                        }>
-                          {dispute.status.replace('_', ' ')}
+                        <Badge className="bg-amber-100 text-amber-800 border-amber-200">
+                          In Progress
                         </Badge>
                       </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid md:grid-cols-3 gap-4 mb-4">
+                      <p className="text-sm text-gray-700 mb-3">Provider disputes the agreed scope of work for road construction phase 1</p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-3">
                         <div>
-                          <p className="text-sm text-muted-foreground mb-1">Provider</p>
-                          <p className="font-semibold">{dispute.providerName}</p>
+                          <span className="text-gray-600">Provider:</span>
+                          <p className="font-medium text-gray-900">BuildCorp Services</p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground mb-1">Filed Date</p>
-                          <p className="font-semibold text-sm">{formatDate(dispute.filedAt)}</p>
+                          <span className="text-gray-600">Filed:</span>
+                          <p className="font-medium text-gray-900">2024-11-18</p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground mb-1">Tender</p>
-                          <p className="font-semibold text-sm">
-                            {tenders.find(t => t.id === dispute.tenderId)?.title || 'Unknown'}
-                          </p>
+                          <span className="text-gray-600">Amount:</span>
+                          <p className="font-medium text-gray-900">P 50,000</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Last Update:</span>
+                          <p className="font-medium text-gray-900">2024-11-22</p>
                         </div>
                       </div>
-                      
-                      {dispute.resolution && (
-                        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                          <p className="text-sm font-medium text-green-800 mb-1">Resolution:</p>
-                          <p className="text-sm text-green-700">{dispute.resolution}</p>
-                        </div>
-                      )}
-
                       <div className="flex gap-2">
-                        {dispute.status === 'pending' && (
-                          <>
-                            <Button size="sm" variant="outline">
-                              <Eye className="h-4 w-4 mr-2" />
-                              Review Evidence
-                            </Button>
-                            <Button size="sm" variant="default">
-                              <CheckCircle className="h-4 w-4 mr-2" />
-                              Approve
-                            </Button>
-                            <Button size="sm" variant="destructive">
-                              <XCircle className="h-4 w-4 mr-2" />
-                              Reject
-                            </Button>
-                          </>
-                        )}
-                        {dispute.status === 'under_review' && (
-                          <Button size="sm" variant="outline">
-                            <Clock className="h-4 w-4 mr-2" />
-                            Under Review
-                          </Button>
-                        )}
-                        {dispute.status === 'resolved' && (
-                          <Button size="sm" variant="outline">
-                            <CheckCircle className="h-4 w-4 mr-2" />
-                            Resolved
-                          </Button>
-                        )}
+                        <Button size="sm" variant="outline">
+                          <Eye className="h-4 w-4 mr-2" />
+                          Review Evidence
+                        </Button>
+                        <Button size="sm" variant="default">
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Resolve
+                        </Button>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                    </div>
+
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="font-semibold text-gray-900">Payment Delay Issue</h3>
+                          <p className="text-sm text-gray-600">DISPUTE-002 - TENDER-002</p>
+                        </div>
+                        <Badge className="bg-green-100 text-green-800 border-green-200">
+                          Resolved
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-700 mb-3">Payment release was delayed due to documentation verification</p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-3">
+                        <div>
+                          <span className="text-gray-600">Provider:</span>
+                          <p className="font-medium text-gray-900">TechFlow Solutions</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Filed:</span>
+                          <p className="font-medium text-gray-900">2024-11-10</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Amount:</span>
+                          <p className="font-medium text-gray-900">P 120,000</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Resolved:</span>
+                          <p className="font-medium text-green-600">2024-11-20</p>
+                        </div>
+                      </div>
+                      <div className="p-3 bg-green-50 border border-green-200 rounded-lg mb-3">
+                        <p className="text-sm font-medium text-green-800 mb-1">Resolution:</p>
+                        <p className="text-sm text-green-700">Documentation verified and payment released successfully</p>
+                      </div>
+                      <Button size="sm" variant="outline">
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        View Resolution
+                      </Button>
+                    </div>
+
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="font-semibold text-gray-900">Quality Standards Dispute</h3>
+                          <p className="text-sm text-gray-600">DISPUTE-003 - TENDER-003</p>
+                        </div>
+                        <Badge className="bg-amber-100 text-amber-800 border-amber-200">
+                          In Progress
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-700 mb-3">Entity claims delivered work does not meet quality standards</p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-3">
+                        <div>
+                          <span className="text-gray-600">Provider:</span>
+                          <p className="font-medium text-gray-900">Global Services Ltd</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Filed:</span>
+                          <p className="font-medium text-gray-900">2024-11-15</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Amount:</span>
+                          <p className="font-medium text-gray-900">P 80,000</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Last Update:</span>
+                          <p className="font-medium text-gray-900">2024-11-21</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline">
+                          <Eye className="h-4 w-4 mr-2" />
+                          Review Evidence
+                        </Button>
+                        <Button size="sm" variant="default">
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Resolve
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="border border-red-200 rounded-lg p-4 bg-red-50">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="font-semibold text-gray-900">Contract Termination Request</h3>
+                          <p className="text-sm text-gray-600">DISPUTE-004 - TENDER-001</p>
+                        </div>
+                        <Badge className="bg-red-100 text-red-800 border-red-200">
+                          Escalated
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-700 mb-3">Provider requests contract termination due to force majeure</p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-3">
+                        <div>
+                          <span className="text-gray-600">Provider:</span>
+                          <p className="font-medium text-gray-900">Elite Construction</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Filed:</span>
+                          <p className="font-medium text-gray-900">2024-11-12</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Amount:</span>
+                          <p className="font-medium text-gray-900">P 450,000</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Last Update:</span>
+                          <p className="font-medium text-gray-900">2024-11-23</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="destructive">
+                          <AlertTriangle className="h-4 w-4 mr-2" />
+                          Urgent Review Required
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           )}
 
@@ -519,7 +729,7 @@ export default function AdminDashboardPage() {
             <div className="space-y-6">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">Escrow Monitor</h1>
-                <p className="text-gray-600">Track escrow transactions and balances</p>
+                <p className="text-gray-700">Track escrow transactions and balances</p>
               </div>
 
               {/* Escrow Summary */}
@@ -534,7 +744,7 @@ export default function AdminDashboardPage() {
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-sm font-medium">Total Releases</CardTitle>
@@ -545,7 +755,7 @@ export default function AdminDashboardPage() {
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-sm font-medium">Current Balance</CardTitle>
@@ -568,29 +778,27 @@ export default function AdminDashboardPage() {
                     {escrowEvents.map((event) => (
                       <div key={event.id} className="flex items-center justify-between p-4 border rounded-lg">
                         <div className="flex items-center gap-4">
-                          <div className={`p-2 rounded-full ${
-                            event.type === 'deposit' ? 'bg-green-100 text-green-600' :
+                          <div className={`p-2 rounded-full ${event.type === 'deposit' ? 'bg-green-100 text-green-600' :
                             event.type === 'release' ? 'bg-blue-100 text-blue-600' :
-                            'bg-yellow-100 text-yellow-600'
-                          }`}>
+                              'bg-yellow-100 text-yellow-600'
+                            }`}>
                             <DollarSign className="h-4 w-4" />
                           </div>
                           <div>
                             <p className="font-medium">{event.description}</p>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-muted-foreground">
                               {formatDate(event.timestamp)} • {event.performedByRole}
                             </p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className={`font-medium ${
-                            event.type === 'deposit' ? 'text-green-600' :
+                          <p className={`font-medium ${event.type === 'deposit' ? 'text-green-600' :
                             event.type === 'release' ? 'text-blue-600' :
-                            'text-yellow-600'
-                          }`}>
+                              'text-yellow-600'
+                            }`}>
                             {event.type === 'release' ? '-' : '+'}{formatCurrency(event.amount)}
                           </p>
-                          <p className="text-sm text-gray-500 capitalize">{event.type}</p>
+                          <p className="text-sm text-muted-foreground capitalize">{event.type}</p>
                         </div>
                       </div>
                     ))}
@@ -604,7 +812,7 @@ export default function AdminDashboardPage() {
             <div className="space-y-6">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">Users & Roles</h1>
-                <p className="text-gray-600">Manage platform users and their roles</p>
+                <p className="text-gray-700">Manage platform users and their roles</p>
               </div>
 
               {/* User Stats */}
@@ -617,7 +825,7 @@ export default function AdminDashboardPage() {
                     <div className="text-2xl font-bold">{users.length}</div>
                   </CardContent>
                 </Card>
-                
+
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-sm font-medium">Entities</CardTitle>
@@ -626,7 +834,7 @@ export default function AdminDashboardPage() {
                     <div className="text-2xl font-bold">{users.filter(u => u.role === 'entity').length}</div>
                   </CardContent>
                 </Card>
-                
+
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-sm font-medium">Providers</CardTitle>
@@ -649,48 +857,48 @@ export default function AdminDashboardPage() {
                   </Card>
                 ) : (
                   users.map((user) => (
-                  <Card key={user.id}>
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <CardTitle className="mb-2">{user.name}</CardTitle>
-                          <CardDescription>{user.organizationName}</CardDescription>
+                    <Card key={user.id}>
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <CardTitle className="mb-2">{user.name}</CardTitle>
+                            <CardDescription>{user.organizationName}</CardDescription>
+                          </div>
+                          <Badge variant={
+                            user.role === 'admin' ? 'destructive' :
+                              user.role === 'entity' ? 'default' : 'secondary'
+                          }>
+                            {user.role}
+                          </Badge>
                         </div>
-                        <Badge variant={
-                          user.role === 'admin' ? 'destructive' : 
-                          user.role === 'entity' ? 'default' : 'secondary'
-                        }>
-                          {user.role}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid md:grid-cols-3 gap-4 mb-4">
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-1">Email</p>
-                          <p className="font-semibold text-sm">{user.email}</p>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid md:grid-cols-3 gap-4 mb-4">
+                          <div>
+                            <p className="text-sm text-muted-foreground mb-1">Email</p>
+                            <p className="font-semibold text-sm">{user.email}</p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-muted-foreground mb-1">Phone</p>
+                            <p className="font-semibold text-sm">{user.phone || 'N/A'}</p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-muted-foreground mb-1">Joined</p>
+                            <p className="font-semibold text-sm">{formatDate(user.createdAt)}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-1">Phone</p>
-                          <p className="font-semibold text-sm">{user.phone || 'N/A'}</p>
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm">
+                            <Eye className="h-4 w-4 mr-2" />
+                            View Profile
+                          </Button>
+                          <Button variant="outline" size="sm">
+                            <Settings className="h-4 w-4 mr-2" />
+                            Manage Roles
+                          </Button>
                         </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-1">Joined</p>
-                          <p className="font-semibold text-sm">{formatDate(user.createdAt)}</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <Eye className="h-4 w-4 mr-2" />
-                          View Profile
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Settings className="h-4 w-4 mr-2" />
-                          Manage Roles
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
                   ))
                 )}
               </div>
@@ -701,7 +909,7 @@ export default function AdminDashboardPage() {
             <div className="space-y-6">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">Audit Log</h1>
-                <p className="text-gray-600">System activity and security audit trail</p>
+                <p className="text-gray-700">System activity and security audit trail</p>
               </div>
 
               {/* Audit Stats */}
@@ -714,7 +922,7 @@ export default function AdminDashboardPage() {
                     <div className="text-2xl font-bold">{auditEvents.length}</div>
                   </CardContent>
                 </Card>
-                
+
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-sm font-medium">Core Events</CardTitle>
@@ -725,7 +933,7 @@ export default function AdminDashboardPage() {
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-sm font-medium">Escrow Events</CardTitle>
@@ -768,44 +976,43 @@ export default function AdminDashboardPage() {
                       </div>
                     ) : (
                       auditEvents.map((event) => (
-                      <div key={event.id} className="flex items-start justify-between p-4 border rounded-lg">
-                        <div className="flex items-start gap-4">
-                          <div className={`p-2 rounded-full ${
-                            event.source === 'core-canister' ? 'bg-blue-100 text-blue-600' :
-                            event.source === 'escrow-adapter' ? 'bg-green-100 text-green-600' :
-                            'bg-gray-100 text-gray-600'
-                          }`}>
-                            {event.source === 'core-canister' ? (
-                              <FileText className="h-4 w-4" />
-                            ) : event.source === 'escrow-adapter' ? (
-                              <DollarSign className="h-4 w-4" />
-                            ) : (
-                              <Activity className="h-4 w-4" />
-                            )}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <p className="font-medium text-sm capitalize">{event.kind.replace('_', ' ')}</p>
-                              <Badge variant="outline" className="text-xs">
-                                {event.source}
-                              </Badge>
+                        <div key={event.id} className="flex items-start justify-between p-4 border rounded-lg">
+                          <div className="flex items-start gap-4">
+                            <div className={`p-2 rounded-full ${event.source === 'core-canister' ? 'bg-blue-100 text-blue-600' :
+                              event.source === 'escrow-adapter' ? 'bg-green-100 text-green-600' :
+                                'bg-gray-100 text-gray-600'
+                              }`}>
+                              {event.source === 'core-canister' ? (
+                                <FileText className="h-4 w-4" />
+                              ) : event.source === 'escrow-adapter' ? (
+                                <DollarSign className="h-4 w-4" />
+                              ) : (
+                                <Activity className="h-4 w-4" />
+                              )}
                             </div>
-                            <p className="text-sm text-gray-700">{event.data}</p>
-                            <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                              <span>User: {event.userId}</span>
-                              <span>Role: {event.userRole}</span>
-                              <span>{formatDate(event.timestamp)}</span>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <p className="font-medium text-sm capitalize">{event.kind.replace('_', ' ')}</p>
+                                <Badge variant="outline" className="text-xs">
+                                  {event.source}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-gray-700">{event.data}</p>
+                              <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                                <span>User: {event.userId}</span>
+                                <span>Role: {event.userRole}</span>
+                                <span>{formatDate(event.timestamp)}</span>
+                              </div>
                             </div>
                           </div>
+                          <Badge variant={
+                            event.kind.includes('created') || event.kind.includes('awarded') ? 'default' :
+                              event.kind.includes('dispute') || event.kind.includes('rejected') ? 'destructive' :
+                                'secondary'
+                          } className="text-xs">
+                            {event.kind}
+                          </Badge>
                         </div>
-                        <Badge variant={
-                          event.kind.includes('created') || event.kind.includes('awarded') ? 'default' :
-                          event.kind.includes('dispute') || event.kind.includes('rejected') ? 'destructive' :
-                          'secondary'
-                        } className="text-xs">
-                          {event.kind}
-                        </Badge>
-                      </div>
                       ))
                     )}
                   </div>

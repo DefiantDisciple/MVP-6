@@ -117,10 +117,10 @@ export function SubmitBidModal({ tender, open, onOpenChange, onSuccess }: Submit
         if (!open) resetForm()
       }}
     >
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl bg-white border border-gray-300 shadow-2xl">
         <DialogHeader>
-          <DialogTitle>Submit Bid</DialogTitle>
-          <DialogDescription>{tender.title}</DialogDescription>
+          <DialogTitle className="text-xl font-semibold text-gray-900">Submit Bid</DialogTitle>
+          <DialogDescription className="text-gray-600">{tender.title}</DialogDescription>
         </DialogHeader>
 
         {!receipts ? (
@@ -135,8 +135,8 @@ export function SubmitBidModal({ tender, open, onOpenChange, onSuccess }: Submit
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Technical Proposal (PDF) *</label>
-                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                <label className="block text-sm font-medium mb-2 text-gray-900">Technical Proposal (PDF) *</label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center bg-gray-50">
                   <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                   <input
                     type="file"
@@ -150,13 +150,13 @@ export function SubmitBidModal({ tender, open, onOpenChange, onSuccess }: Submit
                       <span className="cursor-pointer">Choose File</span>
                     </Button>
                   </label>
-                  {technicalFile && <p className="text-sm text-foreground mt-2 font-medium">{technicalFile.name}</p>}
+                  {technicalFile && <p className="text-sm text-gray-900 mt-2 font-medium">{technicalFile.name}</p>}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Financial Proposal (PDF) *</label>
-                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                <label className="block text-sm font-medium mb-2 text-gray-900">Financial Proposal (PDF) *</label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center bg-gray-50">
                   <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                   <input
                     type="file"
@@ -170,16 +170,16 @@ export function SubmitBidModal({ tender, open, onOpenChange, onSuccess }: Submit
                       <span className="cursor-pointer">Choose File</span>
                     </Button>
                   </label>
-                  {financialFile && <p className="text-sm text-foreground mt-2 font-medium">{financialFile.name}</p>}
+                  {financialFile && <p className="text-sm text-gray-900 mt-2 font-medium">{financialFile.name}</p>}
                 </div>
               </div>
             </div>
 
             <div className="flex justify-end gap-3">
-              <Button variant="outline" onClick={() => onOpenChange(false)}>
+              <Button variant="outline" onClick={() => onOpenChange(false)} className="border-gray-300 text-gray-700 hover:bg-gray-50">
                 Cancel
               </Button>
-              <Button onClick={handleSubmit} disabled={!technicalFile || !financialFile || isSubmitting}>
+              <Button onClick={handleSubmit} disabled={!technicalFile || !financialFile || isSubmitting} className="bg-blue-600 hover:bg-blue-700 text-white">
                 {isSubmitting ? "Submitting..." : "Submit Bid"}
               </Button>
             </div>

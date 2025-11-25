@@ -1,320 +1,206 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { FileText, Users, Shield, Clock, Lock, TrendingUp, ArrowRight, CheckCircle, Star, Zap } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { CheckCircle, Clock, Trophy, Upload, FileText, Search, Handshake, ArrowRight } from "lucide-react"
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary-50/30 to-accent-50/20">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="border-b border-border/50 bg-card/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary rounded-lg shadow-blue-glow">
-              <FileText className="h-6 w-6 text-primary-foreground" />
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              TenderHub
-            </span>
-          </div>
-          <Link href="/login">
-            <Button className="shadow-lg hover:shadow-blue-glow transition-all duration-300">
-              Access Portal
-              <ArrowRight className="ml-2 h-4 w-4" />
+      <header className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-gray-900">VerDEX Systems</h1>
+          <div className="flex items-center gap-4">
+            <Button variant="outline" className="text-gray-700 border-gray-300">
+              Sign in with II
             </Button>
-          </Link>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              Register
+            </Button>
+          </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-24 text-center relative">
-        {/* Background decoration */}
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-20 left-1/4 w-72 h-72 bg-primary/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl"></div>
+      <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 flex items-center justify-center py-20">
+        {/* Network Wireframe Pattern */}
+        <div className="absolute inset-0 opacity-15">
+          <svg className="w-full h-full" viewBox="0 0 1200 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Network nodes */}
+            <circle cx="100" cy="100" r="2" fill="currentColor" className="text-blue-400"/>
+            <circle cx="300" cy="150" r="2" fill="currentColor" className="text-blue-400"/>
+            <circle cx="500" cy="80" r="2" fill="currentColor" className="text-blue-400"/>
+            <circle cx="700" cy="200" r="2" fill="currentColor" className="text-blue-400"/>
+            <circle cx="900" cy="120" r="2" fill="currentColor" className="text-blue-400"/>
+            <circle cx="1100" cy="180" r="2" fill="currentColor" className="text-blue-400"/>
+            
+            <circle cx="150" cy="300" r="2" fill="currentColor" className="text-blue-300"/>
+            <circle cx="350" cy="350" r="2" fill="currentColor" className="text-blue-300"/>
+            <circle cx="550" cy="280" r="2" fill="currentColor" className="text-blue-300"/>
+            <circle cx="750" cy="400" r="2" fill="currentColor" className="text-blue-300"/>
+            <circle cx="950" cy="320" r="2" fill="currentColor" className="text-blue-300"/>
+            
+            {/* Connection lines */}
+            <line x1="100" y1="100" x2="300" y2="150" stroke="currentColor" strokeWidth="1" className="text-blue-400/40"/>
+            <line x1="300" y1="150" x2="500" y2="80" stroke="currentColor" strokeWidth="1" className="text-blue-400/40"/>
+            <line x1="500" y1="80" x2="700" y2="200" stroke="currentColor" strokeWidth="1" className="text-blue-400/40"/>
+            <line x1="700" y1="200" x2="900" y2="120" stroke="currentColor" strokeWidth="1" className="text-blue-400/40"/>
+            <line x1="900" y1="120" x2="1100" y2="180" stroke="currentColor" strokeWidth="1" className="text-blue-400/40"/>
+            
+            <line x1="150" y1="300" x2="350" y2="350" stroke="currentColor" strokeWidth="1" className="text-blue-300/40"/>
+            <line x1="350" y1="350" x2="550" y2="280" stroke="currentColor" strokeWidth="1" className="text-blue-300/40"/>
+            <line x1="550" y1="280" x2="750" y2="400" stroke="currentColor" strokeWidth="1" className="text-blue-300/40"/>
+            <line x1="750" y1="400" x2="950" y2="320" stroke="currentColor" strokeWidth="1" className="text-blue-300/40"/>
+            
+            {/* Cross connections */}
+            <line x1="100" y1="100" x2="150" y2="300" stroke="currentColor" strokeWidth="1" className="text-blue-400/30"/>
+            <line x1="300" y1="150" x2="350" y2="350" stroke="currentColor" strokeWidth="1" className="text-blue-400/30"/>
+            <line x1="500" y1="80" x2="550" y2="280" stroke="currentColor" strokeWidth="1" className="text-blue-400/30"/>
+            <line x1="700" y1="200" x2="750" y2="400" stroke="currentColor" strokeWidth="1" className="text-blue-400/30"/>
+            <line x1="900" y1="120" x2="950" y2="320" stroke="currentColor" strokeWidth="1" className="text-blue-400/30"/>
+          </svg>
         </div>
-
-        <Badge variant="secondary" className="mb-6 px-4 py-2 text-sm font-medium animate-fade-in">
-          <Zap className="w-4 h-4 mr-2" />
-          Next-Generation Procurement Platform
-        </Badge>
-
-        <h1 className="text-6xl md:text-7xl font-bold mb-8 text-balance bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent leading-tight">
-          Transparent Government Procurement Made Simple
-        </h1>
         
-        <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto text-balance leading-relaxed">
-          A comprehensive platform for managing the entire tender lifecycle—from publication through evaluation to award
-          and escrow management with blockchain-powered transparency.
-        </p>
-
-        {/* Demo Mode Banner */}
-        <div className="mb-12 px-8 py-4 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-2xl inline-block shadow-lg backdrop-blur-sm">
-          <p className="text-primary font-semibold text-lg">
-            🚀 <strong>Demo Mode Active</strong> - Explore all features with comprehensive mock data
-          </p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-          <Link href="/entity/dashboard">
-            <Button size="lg" className="text-lg px-10 py-4 shadow-blue-glow hover:shadow-blue-glow-lg transition-all duration-300 group">
-              Entity Dashboard
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
-          <Link href="/provider/dashboard">
-            <Button size="lg" variant="outline" className="text-lg px-10 py-4 bg-card/50 backdrop-blur-sm border-primary/20 hover:bg-primary/5 transition-all duration-300 group">
-              Provider Dashboard
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
-          <Link href="/admin/dashboard">
-            <Button size="lg" variant="secondary" className="text-lg px-10 py-4 bg-secondary/80 hover:bg-secondary transition-all duration-300 group">
-              Admin Console
-            </Button>
-          </Link>
-        </div>
-      </section>
-
-      {/* Features Grid */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="text-center mb-16">
-          <Badge variant="outline" className="mb-4 px-4 py-2">
-            <Star className="w-4 h-4 mr-2" />
-            Enterprise Features
-          </Badge>
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
-            Built for Government Procurement
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Comprehensive tools designed specifically for transparent, efficient, and compliant procurement processes
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <Card className="group hover:shadow-card-hover transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm">
-            <CardHeader className="pb-4">
-              <div className="p-3 bg-gradient-to-br from-primary to-primary-600 rounded-xl w-fit mb-4 shadow-blue-glow group-hover:shadow-blue-glow-lg transition-all duration-300">
-                <Shield className="h-8 w-8 text-primary-foreground" />
-              </div>
-              <CardTitle className="text-xl group-hover:text-primary transition-colors">Secure & Compliant</CardTitle>
-              <CardDescription className="text-base leading-relaxed">
-                End-to-end encryption, sealed bids, and digital signatures ensure integrity throughout the process with blockchain verification.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="group hover:shadow-card-hover transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm">
-            <CardHeader className="pb-4">
-              <div className="p-3 bg-gradient-to-br from-accent to-accent-600 rounded-xl w-fit mb-4 shadow-blue-glow group-hover:shadow-blue-glow-lg transition-all duration-300">
-                <Clock className="h-8 w-8 text-accent-foreground" />
-              </div>
-              <CardTitle className="text-xl group-hover:text-primary transition-colors">Business Day Tracking</CardTitle>
-              <CardDescription className="text-base leading-relaxed">
-                Automatic deadline management with business day calculations, countdown timers, and intelligent scheduling.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="group hover:shadow-card-hover transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm">
-            <CardHeader className="pb-4">
-              <div className="p-3 bg-gradient-to-br from-primary-700 to-primary-800 rounded-xl w-fit mb-4 shadow-blue-glow group-hover:shadow-blue-glow-lg transition-all duration-300">
-                <Lock className="h-8 w-8 text-primary-foreground" />
-              </div>
-              <CardTitle className="text-xl group-hover:text-primary transition-colors">Escrow Management</CardTitle>
-              <CardDescription className="text-base leading-relaxed">
-                Track milestones, payments, and deliverables with transparent escrow event logging and third-party integration.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="group hover:shadow-card-hover transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm">
-            <CardHeader className="pb-4">
-              <div className="p-3 bg-gradient-to-br from-accent-600 to-accent-700 rounded-xl w-fit mb-4 shadow-blue-glow group-hover:shadow-blue-glow-lg transition-all duration-300">
-                <FileText className="h-8 w-8 text-accent-foreground" />
-              </div>
-              <CardTitle className="text-xl group-hover:text-primary transition-colors">Document Control</CardTitle>
-              <CardDescription className="text-base leading-relaxed">
-                File hashing, versioning, and receipts provide complete audit trails for all submissions with immutable records.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="group hover:shadow-card-hover transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm">
-            <CardHeader className="pb-4">
-              <div className="p-3 bg-gradient-to-br from-primary-600 to-accent-600 rounded-xl w-fit mb-4 shadow-blue-glow group-hover:shadow-blue-glow-lg transition-all duration-300">
-                <Users className="h-8 w-8 text-primary-foreground" />
-              </div>
-              <CardTitle className="text-xl group-hover:text-primary transition-colors">Multi-Role Access</CardTitle>
-              <CardDescription className="text-base leading-relaxed">
-                Separate portals for entities, providers, and administrators with granular role-based permissions and security.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="group hover:shadow-card-hover transition-all duration-300 border-border/50 bg-card/50 backdrop-blur-sm">
-            <CardHeader className="pb-4">
-              <div className="p-3 bg-gradient-to-br from-accent to-primary rounded-xl w-fit mb-4 shadow-blue-glow group-hover:shadow-blue-glow-lg transition-all duration-300">
-                <TrendingUp className="h-8 w-8 text-accent-foreground" />
-              </div>
-              <CardTitle className="text-xl group-hover:text-primary transition-colors">Real-Time Updates</CardTitle>
-              <CardDescription className="text-base leading-relaxed">
-                Instant notifications and status updates keep all stakeholders informed with live dashboard analytics.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="container mx-auto px-4 py-20 relative">
-        <div className="bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/10 rounded-3xl p-12 backdrop-blur-sm border border-primary/10 shadow-2xl">
-          <div className="text-center mb-16">
-            <Badge variant="outline" className="mb-4 px-4 py-2">
-              <CheckCircle className="w-4 h-4 mr-2" />
-              Process Overview
-            </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
-              Complete Tender Lifecycle
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Streamlined workflow from tender publication to project completion with full transparency
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center group">
-              <div className="relative mb-6">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary-600 text-primary-foreground flex items-center justify-center text-2xl font-bold mx-auto shadow-blue-glow group-hover:shadow-blue-glow-lg transition-all duration-300 group-hover:scale-110">
-                  1
-                </div>
-                {/* Connector line */}
-                <div className="hidden lg:block absolute top-10 left-full w-full h-0.5 bg-gradient-to-r from-primary/50 to-transparent"></div>
-              </div>
-              <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">Publish Tender</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Entities create and publish tenders with detailed requirements, specifications, and deadlines
-              </p>
-            </div>
-
-            <div className="text-center group">
-              <div className="relative mb-6">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-accent to-accent-600 text-accent-foreground flex items-center justify-center text-2xl font-bold mx-auto shadow-blue-glow group-hover:shadow-blue-glow-lg transition-all duration-300 group-hover:scale-110">
-                  2
-                </div>
-                <div className="hidden lg:block absolute top-10 left-full w-full h-0.5 bg-gradient-to-r from-accent/50 to-transparent"></div>
-              </div>
-              <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">Submit Bids</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Providers submit sealed technical and financial proposals with secure document encryption
-              </p>
-            </div>
-
-            <div className="text-center group">
-              <div className="relative mb-6">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-700 to-primary-800 text-primary-foreground flex items-center justify-center text-2xl font-bold mx-auto shadow-blue-glow group-hover:shadow-blue-glow-lg transition-all duration-300 group-hover:scale-110">
-                  3
-                </div>
-                <div className="hidden lg:block absolute top-10 left-full w-full h-0.5 bg-gradient-to-r from-primary-700/50 to-transparent"></div>
-              </div>
-              <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">Evaluate & Award</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Transparent evaluation process with structured scoring criteria and automated compliance checks
-              </p>
-            </div>
-
-            <div className="text-center group">
-              <div className="relative mb-6">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-accent-600 to-primary-600 text-accent-foreground flex items-center justify-center text-2xl font-bold mx-auto shadow-blue-glow group-hover:shadow-blue-glow-lg transition-all duration-300 group-hover:scale-110">
-                  4
-                </div>
-              </div>
-              <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">Track Milestones</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Monitor project delivery with integrated escrow management and milestone tracking
-              </p>
-            </div>
+        <div className="text-center relative z-10">
+          <h1 className="text-6xl font-bold text-white mb-8">
+            Procurement Made Simple
+          </h1>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link href="/admin/dashboard">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg min-w-[200px]">
+                Admin Dashboard
+              </Button>
+            </Link>
+            <Link href="/entity/dashboard">
+              <Button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg min-w-[200px]">
+                Entity Dashboard
+              </Button>
+            </Link>
+            <Link href="/provider/dashboard">
+              <Button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 text-lg min-w-[200px]">
+                Service Provider
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="container mx-auto px-4 py-24 text-center relative">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
-        </div>
-        
-        <Badge variant="outline" className="mb-6 px-4 py-2">
-          <Zap className="w-4 h-4 mr-2" />
-          Get Started Today
-        </Badge>
-        
-        <h2 className="text-5xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent">
-          Ready to Modernize Your Procurement?
-        </h2>
-        
-        <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed">
-          Join government entities and service providers already using TenderHub for transparent, efficient, and 
-          blockchain-secured tender management processes.
-        </p>
-        
-        <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
-          <Link href="/entity/dashboard">
-            <Button size="lg" className="text-lg px-12 py-4 shadow-blue-glow hover:shadow-blue-glow-lg transition-all duration-300 group">
-              Entity Portal
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
-          <Link href="/provider/dashboard">
-            <Button size="lg" variant="outline" className="text-lg px-12 py-4 bg-card/50 backdrop-blur-sm border-primary/20 hover:bg-primary/5 transition-all duration-300 group">
-              Provider Portal
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
-        </div>
+      {/* Statistics Section */}
+      <section className="bg-white px-6 py-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-3 gap-6">
+            {/* Card 1: Open Tenders */}
+            <Card className="text-center p-6 border border-gray-200">
+              <CardContent className="p-0">
+                <div className="flex items-center justify-center mb-3">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
+                </div>
+                <div className="text-3xl font-bold text-gray-900 mb-2">1,200+</div>
+                <div className="text-gray-600 font-medium">Open Tenders</div>
+              </CardContent>
+            </Card>
 
-        <div className="flex flex-wrap justify-center gap-8 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <CheckCircle className="h-4 w-4 text-primary" />
-            <span>Blockchain Security</span>
+            {/* Card 2: Closing Soon */}
+            <Card className="text-center p-6 border border-gray-200">
+              <CardContent className="p-0">
+                <div className="flex items-center justify-center mb-3">
+                  <Clock className="h-6 w-6 text-orange-500" />
+                </div>
+                <div className="text-3xl font-bold text-gray-900 mb-2">85</div>
+                <div className="text-gray-600 font-medium mb-2">Closing Soon</div>
+                <div className="text-sm text-gray-500">05 SEP 2024 - 12 SEP 2024</div>
+              </CardContent>
+            </Card>
+
+            {/* Card 3: Awarded Tenders */}
+            <Card className="text-center p-6 border border-gray-200">
+              <CardContent className="p-0">
+                <div className="flex items-center justify-center mb-3">
+                  <Trophy className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className="text-3xl font-bold text-gray-900 mb-2">5,500+</div>
+                <div className="text-gray-600 font-medium mb-2">Awarded Tenders</div>
+                <div className="text-lg font-semibold text-gray-800">P15.2 Billion</div>
+              </CardContent>
+            </Card>
           </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle className="h-4 w-4 text-primary" />
-            <span>Real-time Analytics</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle className="h-4 w-4 text-primary" />
-            <span>Compliance Ready</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle className="h-4 w-4 text-primary" />
-            <span>24/7 Support</span>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="bg-blue-50 px-6 py-12">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">How it Works</h2>
+          
+          <div className="flex items-center justify-between">
+            {/* Step 1: Publish */}
+            <div className="text-center flex-1">
+              <div className="flex items-center justify-center mb-4">
+                <div className="bg-blue-600 rounded-full p-4">
+                  <Upload className="h-8 w-8 text-white" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Publish</h3>
+              <p className="text-gray-600">Agencies post tender notices</p>
+            </div>
+
+            {/* Arrow 1 */}
+            <div className="flex justify-center px-4">
+              <ArrowRight className="h-6 w-6 text-blue-600" />
+            </div>
+
+            {/* Step 2: Bid */}
+            <div className="text-center flex-1">
+              <div className="flex items-center justify-center mb-4">
+                <div className="bg-blue-600 rounded-full p-4">
+                  <FileText className="h-8 w-8 text-white" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Bid</h3>
+              <p className="text-gray-600">Suppliers submit proposals</p>
+            </div>
+
+            {/* Arrow 2 */}
+            <div className="flex justify-center px-4">
+              <ArrowRight className="h-6 w-6 text-blue-600" />
+            </div>
+
+            {/* Step 3: Evaluate */}
+            <div className="text-center flex-1">
+              <div className="flex items-center justify-center mb-4">
+                <div className="bg-blue-600 rounded-full p-4">
+                  <Search className="h-8 w-8 text-white" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Evaluate</h3>
+              <p className="text-gray-600">Committees review bids</p>
+            </div>
+
+            {/* Arrow 3 */}
+            <div className="flex justify-center px-4">
+              <ArrowRight className="h-6 w-6 text-blue-600" />
+            </div>
+
+            {/* Step 4: Award */}
+            <div className="text-center flex-1">
+              <div className="flex items-center justify-center mb-4">
+                <div className="bg-blue-600 rounded-full p-4">
+                  <Handshake className="h-8 w-8 text-white" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Award</h3>
+              <p className="text-gray-600">Contracts are finalized</p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 bg-gradient-to-r from-card/80 to-secondary/20 backdrop-blur-sm mt-20">
-        <div className="container mx-auto px-4 py-12">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary rounded-lg shadow-blue-glow">
-                <FileText className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                TenderHub
-              </span>
-            </div>
-            <div className="flex flex-col md:flex-row items-center gap-6 text-sm text-muted-foreground">
-              <p>© 2025 TenderHub. All rights reserved.</p>
-              <div className="flex gap-4">
-                <span className="hover:text-primary transition-colors cursor-pointer">Privacy Policy</span>
-                <span className="hover:text-primary transition-colors cursor-pointer">Terms of Service</span>
-                <span className="hover:text-primary transition-colors cursor-pointer">Support</span>
-              </div>
-            </div>
-          </div>
+      <footer className="bg-gray-900 text-white py-6">
+        <div className="text-center">
+          <p className="text-gray-400">
+            © 2024 VerDEX Systems. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>
