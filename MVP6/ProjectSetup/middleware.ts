@@ -24,6 +24,8 @@ export function middleware(request: NextRequest) {
     "/api/auth/login",
     "/api/auth/logout",
     "/api/auth/accept-invite",
+    "/api/auth/ii-login",
+    "/api/auth/link-ii",
   ]
   const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route))
 

@@ -2,6 +2,8 @@ import { type NextRequest, NextResponse } from "next/server"
 import { mockTenders } from "@/lib/mock-data"
 import { cookies } from "next/headers"
 import type { Tender } from "@/types/tender"
+import { shouldUseMockData } from "@/lib/utils/user-helpers"
+import { userStore } from "@/lib/db/store"
 
 // Additional mock tender data for provider panels
 const providerMockTenders: Tender[] = [
@@ -91,7 +93,8 @@ export async function GET(request: NextRequest) {
     const cookieStore = await cookies()
     const userRole = cookieStore.get("user_role")?.value
     const userId = cookieStore.get("user_id")?.value
-    
+    const orgId = cookieStore.get("org_id")?.value
+
     // Check if authentication is enabled
     const isAuthEnabled = process.env.NEXT_PUBLIC_ENABLE_AUTH === 'true'
     const effectiveUserRole = userRole || 'entity'
@@ -109,11 +112,19 @@ export async function GET(request: NextRequest) {
     const entityId = searchParams.get("entityId")
     const providerId = searchParams.get("providerId")
 
+    // Check if user should see mock data (only demo users)
+    const useMockData = shouldUseMockData(orgId)
+
+    // If not a demo user, return empty array (real data - none yet)
+    if (!useMockData) {
+      return NextResponse.json({ tenders: [] })
+    }
+
     // Use provider mock data for provider-related requests or when requesting provider-specific stages
     const providerStages = ["open", "notice", "awarded", "active", "closed"]
-    const isProviderRequest = aggregate === "provider" || providerId || 
+    const isProviderRequest = aggregate === "provider" || providerId ||
       (stage && stage.split("|").some(s => providerStages.includes(s)))
-    
+
     let filteredTenders = isProviderRequest ? [...providerMockTenders] : [...mockTenders]
 
     // Filter by stage if provided
@@ -163,9 +174,9 @@ export async function GET(request: NextRequest) {
           .reduce((sum, t) => sum + (t.contractValue || 0), 0)
       }
 
-      return NextResponse.json({ 
+      return NextResponse.json({
         tenders: filteredTenders,
-        providerMetrics 
+        providerMetrics
       })
     }
 
@@ -178,12 +189,12 @@ export async function GET(request: NextRequest) {
         const daysUntilClose = Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
         return daysUntilClose <= 7 && daysUntilClose > 0
       })
-      
+
       // Find next closing date
-      const nextClosingDate = openTenders.length > 0 
+      const nextClosingDate = openTenders.length > 0
         ? openTenders
-            .map(t => new Date(t.submissionDeadline))
-            .sort((a, b) => a.getTime() - b.getTime())[0]
+          .map(t => new Date(t.submissionDeadline))
+          .sort((a, b) => a.getTime() - b.getTime())[0]
         : null
 
       const providerMetrics = {
@@ -192,9 +203,9 @@ export async function GET(request: NextRequest) {
         nextClosingDate: nextClosingDate?.toISOString() || null
       }
 
-      return NextResponse.json({ 
+      return NextResponse.json({
         tenders: filteredTenders,
-        providerMetrics 
+        providerMetrics
       })
     }
 
@@ -204,16 +215,16 @@ export async function GET(request: NextRequest) {
       const underEvaluation = filteredTenders.filter(t => t.stage === "evaluation").length
       const active = filteredTenders.filter(t => ["awarded", "active"].includes(t.stage)).length
       const completed = filteredTenders.filter(t => t.stage === "completed").length
-      
+
       // Calculate average cycle days (mock calculation)
       const completedTenders = filteredTenders.filter(t => t.stage === "completed")
-      const avgCycleDays = completedTenders.length > 0 
+      const avgCycleDays = completedTenders.length > 0
         ? Math.round(completedTenders.reduce((sum, t) => {
-            const created = new Date(t.createdAt)
-            const completed = new Date(t.awardDeadline || t.submissionDeadline)
-            const days = Math.abs(completed.getTime() - created.getTime()) / (1000 * 60 * 60 * 24)
-            return sum + days
-          }, 0) / completedTenders.length)
+          const created = new Date(t.createdAt)
+          const completed = new Date(t.awardDeadline || t.submissionDeadline)
+          const days = Math.abs(completed.getTime() - created.getTime()) / (1000 * 60 * 60 * 24)
+          return sum + days
+        }, 0) / completedTenders.length)
         : 0
 
       // Mock compliance percentage
@@ -228,9 +239,9 @@ export async function GET(request: NextRequest) {
         compliancePercentage
       }
 
-      return NextResponse.json({ 
+      return NextResponse.json({
         tenders: filteredTenders,
-        performance: performanceSnapshot 
+        performance: performanceSnapshot
       })
     }
 
@@ -247,7 +258,7 @@ export async function POST(request: NextRequest) {
     const cookieStore = await cookies()
     const userRole = cookieStore.get("user_role")?.value
     const userId = cookieStore.get("user_id")?.value
-    
+
     // Check if authentication is enabled
     const isAuthEnabled = process.env.NEXT_PUBLIC_ENABLE_AUTH === 'true'
     const effectiveUserRole = userRole || 'entity'

@@ -24,11 +24,18 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json()
-        const { email, role, orgId } = body
+        const { email, role, orgId, organizationName, organizationType } = body
 
         // Validate inputs
-        if (!email || !role || !orgId) {
-            return NextResponse.json({ error: "Email, role, and orgId required" }, { status: 400 })
+        if (!email || !role) {
+            return NextResponse.json({ error: "Email and role are required" }, { status: 400 })
+        }
+
+        // Must have either orgId OR both organizationName and organizationType
+        if (!orgId && (!organizationName || !organizationType)) {
+            return NextResponse.json({
+                error: "Either orgId or both organizationName and organizationType are required"
+            }, { status: 400 })
         }
 
         if (!isValidEmail(email)) {
@@ -41,8 +48,13 @@ export async function POST(request: NextRequest) {
         }
 
         // Entity users can only invite to their own organization
-        if (currentUser.role === "entity" && currentUser.orgId !== orgId) {
+        if (currentUser.role === "entity" && orgId && currentUser.orgId !== orgId) {
             return NextResponse.json({ error: "Cannot invite to other organizations" }, { status: 403 })
+        }
+
+        // Entity users cannot create new organizations
+        if (currentUser.role === "entity" && organizationName) {
+            return NextResponse.json({ error: "Only Admin can create new organizations" }, { status: 403 })
         }
 
         // Only Admin can assign Admin role
@@ -56,10 +68,26 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "User with this email already exists" }, { status: 409 })
         }
 
-        // Check if organization exists
-        const org = orgStore.findById(orgId)
-        if (!org) {
-            return NextResponse.json({ error: "Organization not found" }, { status: 404 })
+        // Handle organization - either get existing or create new
+        let targetOrgId = orgId
+        let org
+
+        if (organizationName && organizationType) {
+            // Create new organization
+            org = orgStore.create({
+                id: `org-${organizationType}-${Date.now()}`,
+                name: organizationName,
+                type: organizationType,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            })
+            targetOrgId = org.id
+        } else {
+            // Check if organization exists
+            org = orgStore.findById(orgId)
+            if (!org) {
+                return NextResponse.json({ error: "Organization not found" }, { status: 404 })
+            }
         }
 
         // Validate role matches organization type
@@ -76,7 +104,7 @@ export async function POST(request: NextRequest) {
             id: generateInviteId(),
             email: email.toLowerCase(),
             role: role as Role,
-            orgId,
+            orgId: targetOrgId,
             invitedBy: userId,
             token,
             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
@@ -94,6 +122,7 @@ export async function POST(request: NextRequest) {
                 email: invite.email,
                 role: invite.role,
                 orgId: invite.orgId,
+                organizationName: org.name,
                 inviteLink, // Only for demo, remove in production
                 expiresAt: invite.expiresAt,
             },
@@ -118,14 +147,16 @@ export async function GET(request: NextRequest) {
         }
 
         const invites = inviteStore.list()
-            .filter(inv => !inv.isUsed && inv.expiresAt > new Date())
             .map(inv => ({
                 id: inv.id,
                 email: inv.email,
                 role: inv.role,
                 orgId: inv.orgId,
                 invitedBy: inv.invitedBy,
+                token: inv.token,
                 expiresAt: inv.expiresAt,
+                isUsed: inv.isUsed,
+                usedAt: inv.usedAt,
                 createdAt: inv.createdAt,
             }))
 

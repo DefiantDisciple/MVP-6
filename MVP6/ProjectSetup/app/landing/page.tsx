@@ -1,9 +1,61 @@
+"use client"
+
+import * as React from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { CheckCircle, Clock, Trophy, Upload, FileText, Search, Handshake, ArrowRight } from "lucide-react"
+import { CheckCircle, Clock, Trophy, Upload, FileText, Search, Handshake, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
 
 export default function LandingPage() {
+  const [currentSlide, setCurrentSlide] = React.useState(0)
+  const [isHovering, setIsHovering] = React.useState(false)
+
+  const valuePropositions = [
+    {
+      icon: <CheckCircle className="h-6 w-6 text-white mt-1" />,
+      title: "End-to-End Tender Control",
+      description: "Create, publish, evaluate, and award tenders in one controlled workflow — reducing coordination overhead and process delays.",
+      gradient: "bg-gradient-to-br from-blue-600 to-blue-800"
+    },
+    {
+      icon: <FileText className="h-6 w-6 text-white mt-1" />,
+      title: "Fair & Defensible Evaluation",
+      description: "Structured evaluations reduce rework, disputes, and costly post-award challenges.",
+      gradient: "bg-gradient-to-br from-emerald-600 to-emerald-800"
+    },
+    {
+      icon: <Clock className="h-6 w-6 text-white mt-1" />,
+      title: "Contract Execution Tracking",
+      description: "Early visibility into milestone delays helps prevent cost overruns and uncontrolled variations.",
+      gradient: "bg-gradient-to-br from-amber-600 to-amber-800"
+    },
+    {
+      icon: <Search className="h-6 w-6 text-white mt-1" />,
+      title: "Audit-Ready Records",
+      description: "Clear records reduce audit time, compliance costs, and management overhead.",
+      gradient: "bg-gradient-to-br from-purple-600 to-purple-800"
+    }
+  ]
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % valuePropositions.length)
+  }
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + valuePropositions.length) % valuePropositions.length)
+  }
+
+  // Auto-advance carousel every 5 seconds (pauses on hover)
+  React.useEffect(() => {
+    if (isHovering) return
+
+    const interval = setInterval(() => {
+      nextSlide()
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [currentSlide, isHovering])
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -70,16 +122,11 @@ export default function LandingPage() {
             Procurement Made Simple
           </h1>
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Transparent, efficient, and secure procurement platform for government entities and service providers
+            Transparent, efficient, and secure procurement platform.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/login">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg min-w-[200px]">
-                Sign In
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button variant="outline" className="bg-transparent border-2 border-white text-white hover:bg-white/10 px-8 py-3 text-lg min-w-[200px]">
+          <div className="flex justify-center items-center">
+            <Link href="/login?tab=demo">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg min-w-[240px]">
                 View Demo
               </Button>
             </Link>
@@ -90,44 +137,76 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Statistics Section */}
-      <section className="bg-white px-6 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-3 gap-6">
-            {/* Card 1: Open Tenders */}
-            <Card className="text-center p-6 border border-gray-200">
-              <CardContent className="p-0">
-                <div className="flex items-center justify-center mb-3">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
-                </div>
-                <div className="text-3xl font-bold text-gray-900 mb-2">1,200+</div>
-                <div className="text-gray-600 font-medium">Open Tenders</div>
-              </CardContent>
-            </Card>
+      {/* Value Propositions Carousel Section */}
+      <section className="bg-white px-6 py-12">
+        <div className="max-w-4xl mx-auto">
+          <div
+            className="relative"
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+          >
+            {/* Carousel Container */}
+            <div className="overflow-hidden">
+              <div
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+              >
+                {valuePropositions.map((prop, index) => (
+                  <div key={index} className="w-full flex-shrink-0 px-4">
+                    <Card className={`p-8 border-0 shadow-2xl ${prop.gradient}`}>
+                      <CardContent className="p-0">
+                        <div className="flex items-start gap-4">
+                          <div className="flex-shrink-0">
+                            {prop.icon}
+                          </div>
+                          <div>
+                            <h3 className="text-2xl font-bold text-white mb-3">{prop.title}</h3>
+                            <p className="text-white/90 text-lg leading-relaxed">
+                              {prop.description}
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-            {/* Card 2: Closing Soon */}
-            <Card className="text-center p-6 border border-gray-200">
-              <CardContent className="p-0">
-                <div className="flex items-center justify-center mb-3">
-                  <Clock className="h-6 w-6 text-orange-500" />
-                </div>
-                <div className="text-3xl font-bold text-gray-900 mb-2">85</div>
-                <div className="text-gray-600 font-medium mb-2">Closing Soon</div>
-                <div className="text-sm text-gray-500">05 SEP 2024 - 12 SEP 2024</div>
-              </CardContent>
-            </Card>
+            {/* Left Arrow */}
+            <button
+              onClick={prevSlide}
+              className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-all ${isHovering ? 'opacity-100' : 'opacity-0'
+                }`}
+              aria-label="Previous slide"
+            >
+              <ChevronLeft className="h-6 w-6 text-gray-700" />
+            </button>
 
-            {/* Card 3: Awarded Tenders */}
-            <Card className="text-center p-6 border border-gray-200">
-              <CardContent className="p-0">
-                <div className="flex items-center justify-center mb-3">
-                  <Trophy className="h-6 w-6 text-blue-600" />
-                </div>
-                <div className="text-3xl font-bold text-gray-900 mb-2">5,500+</div>
-                <div className="text-gray-600 font-medium mb-2">Awarded Tenders</div>
-                <div className="text-lg font-semibold text-gray-800">P15.2 Billion</div>
-              </CardContent>
-            </Card>
+            {/* Right Arrow */}
+            <button
+              onClick={nextSlide}
+              className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-all ${isHovering ? 'opacity-100' : 'opacity-0'
+                }`}
+              aria-label="Next slide"
+            >
+              <ChevronRight className="h-6 w-6 text-gray-700" />
+            </button>
+
+            {/* Slide Indicators */}
+            <div className="flex justify-center gap-3 mt-8">
+              {valuePropositions.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`h-3 rounded-full transition-all duration-300 ${index === currentSlide
+                    ? 'w-10 bg-blue-600 shadow-lg'
+                    : 'w-3 bg-gray-400 hover:bg-gray-500'
+                    }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>

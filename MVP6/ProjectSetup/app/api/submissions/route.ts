@@ -1,5 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import type { Submission, Receipt } from "@/types/tender"
+import { shouldUseMockData } from "@/lib/utils/user-helpers"
+import { cookies } from "next/headers"
 
 // Mock submissions storage
 const mockSubmissions: Submission[] = [
@@ -28,11 +30,24 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const providerId = searchParams.get("providerId")
 
-  if (providerId) {
-    return NextResponse.json(mockSubmissions.filter((s) => s.providerId === providerId))
+  const cookieStore = await cookies()
+  const orgId = cookieStore.get("org_id")?.value
+
+  // Check if user should see mock data (only demo users)
+  const useMockData = shouldUseMockData(orgId)
+
+  // If not a demo user, return empty array (real data - none yet)
+  if (!useMockData) {
+    return NextResponse.json({ submissions: [] })
   }
 
-  return NextResponse.json(mockSubmissions)
+  // Filter by providerId if provided
+  let filteredSubmissions = mockSubmissions
+  if (providerId) {
+    filteredSubmissions = mockSubmissions.filter((s) => s.providerId === providerId)
+  }
+
+  return NextResponse.json({ submissions: filteredSubmissions })
 }
 
 export async function POST(request: NextRequest) {

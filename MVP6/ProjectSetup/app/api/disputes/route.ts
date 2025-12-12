@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server"
 import { mockDisputes } from "@/lib/mock-data"
 import { cookies } from "next/headers"
 import type { Dispute } from "@/types/tender"
+import { shouldUseMockData } from "@/lib/utils/user-helpers"
 
 // Additional mock disputes for provider panels
 const providerMockDisputes: Dispute[] = [
@@ -22,7 +23,8 @@ export async function GET(request: NextRequest) {
     const cookieStore = await cookies()
     const userRole = cookieStore.get("user_role")?.value
     const userId = cookieStore.get("user_id")?.value
-    
+    const orgId = cookieStore.get("org_id")?.value
+
     // Check if authentication is enabled
     const isAuthEnabled = process.env.NEXT_PUBLIC_ENABLE_AUTH === 'true'
     const effectiveUserRole = userRole || 'admin'
@@ -31,6 +33,14 @@ export async function GET(request: NextRequest) {
     // Get query parameters
     const { searchParams } = new URL(request.url)
     const providerId = searchParams.get("providerId")
+
+    // Check if user should see mock data (only demo users)
+    const useMockData = shouldUseMockData(orgId)
+
+    // If not a demo user, return empty array (real data - none yet)
+    if (!useMockData) {
+      return NextResponse.json({ disputes: [] })
+    }
 
     // Use provider mock data for provider-related requests
     let filteredDisputes = providerId ? [...providerMockDisputes] : [...mockDisputes]
@@ -48,7 +58,7 @@ export async function GET(request: NextRequest) {
       const pendingDisputes = filteredDisputes.filter(d => d.status === "Pending").length
       const underReviewDisputes = filteredDisputes.filter(d => d.status === "Under Review").length
       const resolvedDisputes = filteredDisputes.filter(d => d.status.startsWith("Resolved")).length
-      
+
       const latestDispute = filteredDisputes.length > 0 ? filteredDisputes
         .sort((a, b) => new Date(b.filedAt).getTime() - new Date(a.filedAt).getTime())[0] : null
 
@@ -83,7 +93,7 @@ export async function POST(request: NextRequest) {
     const cookieStore = await cookies()
     const userRole = cookieStore.get("user_role")?.value
     const userId = cookieStore.get("user_id")?.value
-    
+
     // Check if authentication is enabled
     const isAuthEnabled = process.env.NEXT_PUBLIC_ENABLE_AUTH === 'true'
     const effectiveUserRole = userRole || 'provider'

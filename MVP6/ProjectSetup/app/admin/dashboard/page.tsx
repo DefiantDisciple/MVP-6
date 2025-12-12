@@ -19,8 +19,11 @@ import {
   Eye,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
+  UserPlus,
+  Mail
 } from "lucide-react"
+import Link from "next/link"
 
 export default function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState("overview")
@@ -244,6 +247,19 @@ export default function AdminDashboardPage() {
   return (
     <div className="min-h-screen bg-blue-50">
       <Header title="Admin Console" />
+
+      {/* Quick Actions Bar */}
+      <div className="bg-white border-b border-gray-200 px-6 py-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-900">Platform Administration</h2>
+          <Link href="/admin/invites">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              <UserPlus className="h-4 w-4 mr-2" />
+              Invite Users
+            </Button>
+          </Link>
+        </div>
+      </div>
 
       <div className="flex">
         {/* Sidebar */}

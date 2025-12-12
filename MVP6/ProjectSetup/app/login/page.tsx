@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
+import { Fingerprint } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -19,7 +20,9 @@ export default function LoginPage() {
   const [password, setPassword] = React.useState("")
 
   const returnUrl = searchParams.get("returnUrl") || null
+  const tabParam = searchParams.get("tab") || null
   const isDemoMode = process.env.NEXT_PUBLIC_ENABLE_AUTH === 'false'
+  const defaultTab = tabParam === "demo" ? "demo" : (isDemoMode ? "demo" : "login")
 
   const handleRealLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -44,12 +47,12 @@ export default function LoginPage() {
         variant: "default",
       })
 
-      // Redirect based on role or return URL
+      // Redirect based on role or return URL (force full reload for middleware)
       const userRole = data.user.role
       if (returnUrl && returnUrl.startsWith(`/${userRole}`)) {
-        router.push(returnUrl)
+        window.location.href = returnUrl
       } else {
-        router.push(`/${userRole}/dashboard`)
+        window.location.href = `/${userRole}/dashboard`
       }
     } catch (error: any) {
       toast({
@@ -87,11 +90,68 @@ export default function LoginPage() {
         variant: "default",
       })
 
-      router.push(`/${data.user.role}/dashboard`)
+      // Force navigation with full page reload to ensure middleware processes cookies
+      window.location.href = `/${data.user.role}/dashboard`
     } catch (error) {
       toast({
         title: "Login failed",
         description: "Demo login unavailable.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleIILogin = async () => {
+    setIsLoading(true)
+
+    try {
+      // Dynamically import II module (client-side only)
+      const { loginWithII } = await import("@/lib/auth/internet-identity")
+
+      // Open Internet Identity authentication
+      const principal = await loginWithII()
+
+      if (!principal) {
+        throw new Error("No principal received from Internet Identity")
+      }
+
+      // Send principal to backend
+      const response = await fetch("/api/auth/ii-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ principal }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        if (data.needsLinking) {
+          toast({
+            title: "Account not found",
+            description: "No account is linked to this Internet Identity. Please contact your administrator.",
+            variant: "destructive",
+          })
+        } else {
+          throw new Error(data.error || "Login failed")
+        }
+        return
+      }
+
+      toast({
+        title: "Login successful",
+        description: `Welcome back, ${data.user.name}!`,
+        variant: "default",
+      })
+
+      // Redirect to dashboard
+      window.location.href = `/${data.user.role}/dashboard`
+    } catch (error: any) {
+      console.error("II login error:", error)
+      toast({
+        title: "Internet Identity login failed",
+        description: error.message || "Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -115,7 +175,7 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue={isDemoMode ? "demo" : "login"} className="w-full">
+            <Tabs defaultValue={defaultTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Login</TabsTrigger>
                 <TabsTrigger value="demo">Demo</TabsTrigger>
@@ -152,42 +212,54 @@ export default function LoginPage() {
                     {isLoading ? "Signing in..." : "Sign In"}
                   </Button>
                 </form>
+
+                <div className="relative my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">Or</span>
+                  </div>
+                </div>
+
+                <Button
+                  type="button"
+                  onClick={handleIILogin}
+                  disabled={isLoading}
+                  variant="outline"
+                  className="w-full"
+                >
+                  <Fingerprint className="mr-2 h-4 w-4" />
+                  {isLoading ? "Connecting..." : "Sign in with Internet Identity"}
+                </Button>
+
                 <p className="text-sm text-muted-foreground mt-4 text-center">
                   Access is invite-only. Contact your administrator if you need an account.
                 </p>
               </TabsContent>
 
               {/* Demo Login Tab */}
-              <TabsContent value="demo" className="space-y-4">
+              <TabsContent value="demo" className="space-y-4 pt-4">
                 <p className="text-sm text-muted-foreground mb-4">
                   Quick access demo accounts for platform exploration
                 </p>
 
                 <Button
+                  type="button"
                   onClick={() => handleDemoLogin("demo@entity.com")}
                   disabled={isLoading}
-                  variant="outline"
-                  className="w-full"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-lg font-semibold"
                 >
-                  Demo Entity User
+                  {isLoading ? "Loading..." : "Demo Entity User"}
                 </Button>
 
                 <Button
+                  type="button"
                   onClick={() => handleDemoLogin("demo@provider.com")}
                   disabled={isLoading}
-                  variant="outline"
-                  className="w-full"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6 text-lg font-semibold"
                 >
-                  Demo Provider User
-                </Button>
-
-                <Button
-                  onClick={() => handleDemoLogin("founder@verdex.systems")}
-                  disabled={isLoading}
-                  variant="outline"
-                  className="w-full"
-                >
-                  Demo Admin User
+                  {isLoading ? "Loading..." : "Demo Provider User"}
                 </Button>
 
                 <p className="text-xs text-muted-foreground mt-4 text-center">

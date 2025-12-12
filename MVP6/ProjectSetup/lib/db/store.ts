@@ -47,7 +47,7 @@ export function initializeStore() {
 
     // Hash for "demo123" password
     // In production, use bcrypt. For demo: crypto sha256 hash of "demo123"
-    const demoPasswordHash = "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f"
+    const demoPasswordHash = "d3ad9315b7be5dd53b31a273b3b3aba5defe700808305aa16a3062b76658a791"
 
     // Create founder admin user
     const founderAdmin: User = {
@@ -58,6 +58,7 @@ export function initializeStore() {
         orgId: adminOrg.id,
         authMethod: "both", // Can use both Classic and II
         passwordHash: demoPasswordHash, // Password: demo123
+        iiPrincipal: undefined, // Will be set when user links their II
         organizationName: adminOrg.name,
         isActive: true,
         createdAt: new Date(),
@@ -112,8 +113,17 @@ export const userStore = {
     },
 
     findByEmail(email: string): User | undefined {
-        const userId = usersByEmail.get(email)
+        const userId = usersByEmail.get(email.toLowerCase())
         return userId ? users.get(userId) : undefined
+    },
+
+    findByIIPrincipal(principal: string): User | undefined {
+        for (const user of users.values()) {
+            if (user.iiPrincipal === principal) {
+                return user
+            }
+        }
+        return undefined
     },
 
     findByOrgId(orgId: string): User[] {
@@ -130,9 +140,16 @@ export const userStore = {
         const user = users.get(id)
         if (!user) return undefined
 
-        const updated = { ...user, ...updates, updatedAt: new Date() }
-        users.set(id, updated)
-        return updated
+        const updatedUser = { ...user, ...updates, updatedAt: new Date() }
+        users.set(id, updatedUser)
+
+        // Update email index if email changed
+        if (updates.email && updates.email !== user.email) {
+            usersByEmail.delete(user.email)
+            usersByEmail.set(updates.email, id)
+        }
+
+        return updatedUser
     },
 
     delete(id: string): boolean {
@@ -206,3 +223,6 @@ export const inviteStore = {
         return Array.from(inviteTokens.values())
     },
 }
+
+// Initialize the store when module is first imported
+initializeStore()
