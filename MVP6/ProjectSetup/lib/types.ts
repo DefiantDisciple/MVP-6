@@ -1,6 +1,21 @@
 // Core role definition
 export type Role = "entity" | "provider" | "admin"
 
+// Authentication method
+export type AuthMethod = "classic" | "ii" | "both"
+
+// Organization type
+export type OrganizationType = "entity" | "provider"
+
+// Organization
+export interface Organization {
+  id: string
+  name: string
+  type: OrganizationType
+  createdAt: Date
+  updatedAt: Date
+}
+
 // Tender stage lifecycle
 export type TenderStage =
   | "draft"
@@ -13,17 +28,37 @@ export type TenderStage =
   | "completed"
   | "cancelled"
 
-// User
+// User (Multi-tenant with dual auth)
 export interface User {
   id: string
   email: string
   name: string
   role: Role
-  organizationName?: string
+  orgId: string // Organization ID (required for multi-tenancy)
+  authMethod: AuthMethod // Authentication method used
+  iiPrincipal?: string // Internet Identity principal (nullable)
+  passwordHash?: string // For classic auth (never exposed to client)
+  organizationName?: string // Denormalized for display
   phone?: string
   address?: string
+  isActive: boolean // Account status
+  invitedBy?: string // User ID who sent the invite
   createdAt: Date
   updatedAt: Date
+}
+
+// Invite token for onboarding
+export interface InviteToken {
+  id: string
+  email: string
+  role: Role
+  orgId: string
+  invitedBy: string
+  token: string
+  expiresAt: Date
+  isUsed: boolean
+  usedAt?: Date
+  createdAt: Date
 }
 
 // Tender
@@ -267,15 +302,15 @@ export interface Notification {
   userId: string
 
   type:
-    | "tender_published"
-    | "clarification_answered"
-    | "submission_received"
-    | "evaluation_complete"
-    | "award_issued"
-    | "dispute_filed"
-    | "dispute_update"
-    | "milestone_approved"
-    | "milestone_payment"
+  | "tender_published"
+  | "clarification_answered"
+  | "submission_received"
+  | "evaluation_complete"
+  | "award_issued"
+  | "dispute_filed"
+  | "dispute_update"
+  | "milestone_approved"
+  | "milestone_payment"
 
   title: string
   message: string

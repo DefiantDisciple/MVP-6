@@ -4,21 +4,38 @@ import type { NextRequest } from "next/server"
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Authentication is disabled by default for development/demo purposes
-  // To enable authentication, set NEXT_PUBLIC_ENABLE_AUTH=true in environment
-  const isAuthEnabled = process.env.NEXT_PUBLIC_ENABLE_AUTH === 'true'
-  
-  // If authentication is disabled, allow all routes
+  // Authentication is enabled by default for production
+  // Set NEXT_PUBLIC_ENABLE_AUTH=false to disable (demo mode only)
+  const isAuthEnabled = process.env.NEXT_PUBLIC_ENABLE_AUTH !== 'false'
+
+  // Demo routes - always accessible without auth
+  const demoRoutes = ["/demo"]
+  const isDemoRoute = demoRoutes.some((route) => pathname.startsWith(route))
+
+  if (isDemoRoute) {
+    return NextResponse.next()
+  }
+
+  // Public routes that don't require authentication
+  const publicRoutes = [
+    "/landing",
+    "/login",
+    "/auth/accept-invite",
+    "/api/auth/login",
+    "/api/auth/logout",
+    "/api/auth/accept-invite",
+  ]
+  const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route))
+
+  // If auth is disabled, allow all routes (demo mode)
   if (!isAuthEnabled) {
     return NextResponse.next()
   }
 
-  // Get user role from cookie
+  // Get user session from cookies
   const userRole = request.cookies.get("user_role")?.value
-
-  // Public routes that don't require authentication
-  const publicRoutes = ["/landing", "/login", "/api/auth/login"]
-  const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route))
+  const userId = request.cookies.get("user_id")?.value
+  const orgId = request.cookies.get("org_id")?.value
 
   if (isPublicRoute) {
     // If logged in and trying to access login page, redirect to dashboard
@@ -29,28 +46,39 @@ export function middleware(request: NextRequest) {
   }
 
   // Check if user is authenticated
-  if (!userRole) {
+  if (!userRole || !userId || !orgId) {
     // Redirect to login with return URL
     const loginUrl = new URL("/login", request.url)
     loginUrl.searchParams.set("returnUrl", pathname)
     return NextResponse.redirect(loginUrl)
   }
 
-  // Role-based route protection and auto-redirect
+  // Role-based route protection
+  // Admin can access all routes
+  if (userRole === "admin") {
+    return NextResponse.next()
+  }
+
+  // Entity users can only access entity routes
   if (pathname.startsWith("/entity")) {
     if (userRole !== "entity") {
       return NextResponse.redirect(new URL(getRoleBasedRedirect(userRole), request.url))
     }
-  } else if (pathname.startsWith("/provider")) {
+  }
+  // Provider users can only access provider routes
+  else if (pathname.startsWith("/provider")) {
     if (userRole !== "provider") {
       return NextResponse.redirect(new URL(getRoleBasedRedirect(userRole), request.url))
     }
-  } else if (pathname.startsWith("/admin")) {
+  }
+  // Admin routes are admin-only
+  else if (pathname.startsWith("/admin")) {
     if (userRole !== "admin") {
       return NextResponse.redirect(new URL(getRoleBasedRedirect(userRole), request.url))
     }
-  } else if (pathname === "/") {
-    // Redirect root to role-based dashboard
+  }
+  // Redirect root to role-based dashboard
+  else if (pathname === "/") {
     return NextResponse.redirect(new URL(getRoleBasedRedirect(userRole), request.url))
   }
 

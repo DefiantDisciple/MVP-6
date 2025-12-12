@@ -11,12 +11,16 @@ export default function LandingPage() {
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900">VerDEX Systems</h1>
           <div className="flex items-center gap-4">
-            <Button variant="outline" className="text-gray-700 border-gray-300">
-              Sign in with II
-            </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-              Register
-            </Button>
+            <Link href="/login">
+              <Button variant="outline" className="text-gray-700 border-gray-300">
+                Sign In
+              </Button>
+            </Link>
+            <Link href="/login">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                Get Started
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
@@ -27,61 +31,62 @@ export default function LandingPage() {
         <div className="absolute inset-0 opacity-15">
           <svg className="w-full h-full" viewBox="0 0 1200 600" fill="none" xmlns="http://www.w3.org/2000/svg">
             {/* Network nodes */}
-            <circle cx="100" cy="100" r="2" fill="currentColor" className="text-blue-400"/>
-            <circle cx="300" cy="150" r="2" fill="currentColor" className="text-blue-400"/>
-            <circle cx="500" cy="80" r="2" fill="currentColor" className="text-blue-400"/>
-            <circle cx="700" cy="200" r="2" fill="currentColor" className="text-blue-400"/>
-            <circle cx="900" cy="120" r="2" fill="currentColor" className="text-blue-400"/>
-            <circle cx="1100" cy="180" r="2" fill="currentColor" className="text-blue-400"/>
-            
-            <circle cx="150" cy="300" r="2" fill="currentColor" className="text-blue-300"/>
-            <circle cx="350" cy="350" r="2" fill="currentColor" className="text-blue-300"/>
-            <circle cx="550" cy="280" r="2" fill="currentColor" className="text-blue-300"/>
-            <circle cx="750" cy="400" r="2" fill="currentColor" className="text-blue-300"/>
-            <circle cx="950" cy="320" r="2" fill="currentColor" className="text-blue-300"/>
-            
+            <circle cx="100" cy="100" r="2" fill="currentColor" className="text-blue-400" />
+            <circle cx="300" cy="150" r="2" fill="currentColor" className="text-blue-400" />
+            <circle cx="500" cy="80" r="2" fill="currentColor" className="text-blue-400" />
+            <circle cx="700" cy="200" r="2" fill="currentColor" className="text-blue-400" />
+            <circle cx="900" cy="120" r="2" fill="currentColor" className="text-blue-400" />
+            <circle cx="1100" cy="180" r="2" fill="currentColor" className="text-blue-400" />
+
+            <circle cx="150" cy="300" r="2" fill="currentColor" className="text-blue-300" />
+            <circle cx="350" cy="350" r="2" fill="currentColor" className="text-blue-300" />
+            <circle cx="550" cy="280" r="2" fill="currentColor" className="text-blue-300" />
+            <circle cx="750" cy="400" r="2" fill="currentColor" className="text-blue-300" />
+            <circle cx="950" cy="320" r="2" fill="currentColor" className="text-blue-300" />
+
             {/* Connection lines */}
-            <line x1="100" y1="100" x2="300" y2="150" stroke="currentColor" strokeWidth="1" className="text-blue-400/40"/>
-            <line x1="300" y1="150" x2="500" y2="80" stroke="currentColor" strokeWidth="1" className="text-blue-400/40"/>
-            <line x1="500" y1="80" x2="700" y2="200" stroke="currentColor" strokeWidth="1" className="text-blue-400/40"/>
-            <line x1="700" y1="200" x2="900" y2="120" stroke="currentColor" strokeWidth="1" className="text-blue-400/40"/>
-            <line x1="900" y1="120" x2="1100" y2="180" stroke="currentColor" strokeWidth="1" className="text-blue-400/40"/>
-            
-            <line x1="150" y1="300" x2="350" y2="350" stroke="currentColor" strokeWidth="1" className="text-blue-300/40"/>
-            <line x1="350" y1="350" x2="550" y2="280" stroke="currentColor" strokeWidth="1" className="text-blue-300/40"/>
-            <line x1="550" y1="280" x2="750" y2="400" stroke="currentColor" strokeWidth="1" className="text-blue-300/40"/>
-            <line x1="750" y1="400" x2="950" y2="320" stroke="currentColor" strokeWidth="1" className="text-blue-300/40"/>
-            
+            <line x1="100" y1="100" x2="300" y2="150" stroke="currentColor" strokeWidth="1" className="text-blue-400/40" />
+            <line x1="300" y1="150" x2="500" y2="80" stroke="currentColor" strokeWidth="1" className="text-blue-400/40" />
+            <line x1="500" y1="80" x2="700" y2="200" stroke="currentColor" strokeWidth="1" className="text-blue-400/40" />
+            <line x1="700" y1="200" x2="900" y2="120" stroke="currentColor" strokeWidth="1" className="text-blue-400/40" />
+            <line x1="900" y1="120" x2="1100" y2="180" stroke="currentColor" strokeWidth="1" className="text-blue-400/40" />
+
+            <line x1="150" y1="300" x2="350" y2="350" stroke="currentColor" strokeWidth="1" className="text-blue-300/40" />
+            <line x1="350" y1="350" x2="550" y2="280" stroke="currentColor" strokeWidth="1" className="text-blue-300/40" />
+            <line x1="550" y1="280" x2="750" y2="400" stroke="currentColor" strokeWidth="1" className="text-blue-300/40" />
+            <line x1="750" y1="400" x2="950" y2="320" stroke="currentColor" strokeWidth="1" className="text-blue-300/40" />
+
             {/* Cross connections */}
-            <line x1="100" y1="100" x2="150" y2="300" stroke="currentColor" strokeWidth="1" className="text-blue-400/30"/>
-            <line x1="300" y1="150" x2="350" y2="350" stroke="currentColor" strokeWidth="1" className="text-blue-400/30"/>
-            <line x1="500" y1="80" x2="550" y2="280" stroke="currentColor" strokeWidth="1" className="text-blue-400/30"/>
-            <line x1="700" y1="200" x2="750" y2="400" stroke="currentColor" strokeWidth="1" className="text-blue-400/30"/>
-            <line x1="900" y1="120" x2="950" y2="320" stroke="currentColor" strokeWidth="1" className="text-blue-400/30"/>
+            <line x1="100" y1="100" x2="150" y2="300" stroke="currentColor" strokeWidth="1" className="text-blue-400/30" />
+            <line x1="300" y1="150" x2="350" y2="350" stroke="currentColor" strokeWidth="1" className="text-blue-400/30" />
+            <line x1="500" y1="80" x2="550" y2="280" stroke="currentColor" strokeWidth="1" className="text-blue-400/30" />
+            <line x1="700" y1="200" x2="750" y2="400" stroke="currentColor" strokeWidth="1" className="text-blue-400/30" />
+            <line x1="900" y1="120" x2="950" y2="320" stroke="currentColor" strokeWidth="1" className="text-blue-400/30" />
           </svg>
         </div>
-        
+
         <div className="text-center relative z-10">
-          <h1 className="text-6xl font-bold text-white mb-8">
+          <h1 className="text-6xl font-bold text-white mb-4">
             Procurement Made Simple
           </h1>
+          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            Transparent, efficient, and secure procurement platform for government entities and service providers
+          </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/admin/dashboard">
+            <Link href="/login">
               <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg min-w-[200px]">
-                Admin Dashboard
+                Sign In
               </Button>
             </Link>
-            <Link href="/entity/dashboard">
-              <Button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg min-w-[200px]">
-                Entity Dashboard
-              </Button>
-            </Link>
-            <Link href="/provider/dashboard">
-              <Button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 text-lg min-w-[200px]">
-                Service Provider
+            <Link href="/login">
+              <Button variant="outline" className="bg-transparent border-2 border-white text-white hover:bg-white/10 px-8 py-3 text-lg min-w-[200px]">
+                View Demo
               </Button>
             </Link>
           </div>
+          <p className="text-sm text-gray-400 mt-6">
+            Invite-only access • Contact your administrator to get started
+          </p>
         </div>
       </section>
 
@@ -131,7 +136,7 @@ export default function LandingPage() {
       <section className="bg-blue-50 px-6 py-12">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">How it Works</h2>
-          
+
           <div className="flex items-center justify-between">
             {/* Step 1: Publish */}
             <div className="text-center flex-1">
