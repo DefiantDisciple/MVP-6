@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,7 +11,7 @@ import { useToast } from "@/hooks/use-toast"
 import { CheckCircle, AlertCircle, Loader2, Fingerprint } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
-export default function AcceptInvitePage() {
+function AcceptInviteContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const { toast } = useToast()
@@ -341,5 +342,22 @@ export default function AcceptInvitePage() {
                 </Card>
             </div>
         </div>
+    )
+}
+
+export default function AcceptInvitePage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
+                <Card className="w-full max-w-md">
+                    <CardContent className="flex flex-col items-center justify-center py-12">
+                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground mb-4" />
+                        <p className="text-muted-foreground">Loading...</p>
+                    </CardContent>
+                </Card>
+            </div>
+        }>
+            <AcceptInviteContent />
+        </Suspense>
     )
 }

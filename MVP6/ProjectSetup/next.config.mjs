@@ -6,6 +6,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Add empty turbopack config to silence Next.js 16 warning
+  turbopack: {},
   webpack: (config, { isServer }) => {
     if (isServer) {
       // Exclude DFINITY packages from server bundle (client-only)
