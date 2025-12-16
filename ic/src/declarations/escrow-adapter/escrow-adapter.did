@@ -1,5 +1,51 @@
+type EscrowEvent = 
+ record {
+   amount: nat64;
+   description: text;
+   escrow_ref: text;
+   event_type: text;
+   id: text;
+   metadata: vec record {
+                   text;
+                   text;
+                 };
+   performed_by: text;
+   timestamp: nat64;
+ };
+type Escrow = 
+ record {
+   amount: nat64;
+   created_ts: nat64;
+   currency: text;
+   dispute_id: opt text;
+   metadata: vec record {
+                   text;
+                   text;
+                 };
+   milestone_id: opt text;
+   ref: text;
+   status: text;
+   tender_id: nat;
+   updated_ts: nat64;
+ };
 service : {
   create_escrow: (tender_id: nat, amount: nat64, currency: text) -> (text);
+  dispute_escrow: (escrow_ref: text, dispute_id: text) -> (bool);
+  get_all_escrows: () -> (vec Escrow) query;
+  get_escrow_details: (escrow_ref: text) -> (opt Escrow) query;
+  get_escrow_history: (tender_id: nat) -> (vec EscrowEvent) query;
+  get_escrow_stats: () ->
+   (record {
+      by_status: vec record {
+                       text;
+                       nat;
+                     };
+      total_amount: nat64;
+      total_escrows: nat;
+    }) query;
+  hold_funds: (escrow_ref: text, milestone_id: text) -> (bool);
   mirror_event: (kind: text, payload: text) -> (bool);
+  refund_payment: (escrow_ref: text, reason: text) -> (bool);
   release_payment: (escrow_ref: text) -> (bool);
+  resolve_dispute: (escrow_ref: text, resolution: text) -> (bool);
 }

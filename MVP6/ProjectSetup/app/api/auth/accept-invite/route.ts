@@ -8,15 +8,32 @@ import { hashPassword, generateUserId, isValidPassword } from "@/lib/auth/utils"
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
-        const { token, name, password } = body
+        const { token, name, password, iiPrincipal } = body
 
         // Validate inputs
-        if (!token || !name || !password) {
-            return NextResponse.json({ error: "Token, name, and password required" }, { status: 400 })
+        if (!token || !name) {
+            return NextResponse.json({ error: "Token and name required" }, { status: 400 })
         }
 
-        if (!isValidPassword(password)) {
+        // Must have either password or II principal
+        if (!password && !iiPrincipal) {
+            return NextResponse.json({ error: "Either password or Internet Identity required" }, { status: 400 })
+        }
+
+        // Validate password if provided
+        if (password && !isValidPassword(password)) {
             return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 })
+        }
+
+        // Check if II principal is already linked to another account
+        if (iiPrincipal) {
+            const existingUser = userStore.findByIIPrincipal(iiPrincipal)
+            if (existingUser) {
+                return NextResponse.json(
+                    { error: "This Internet Identity is already linked to another account" },
+                    { status: 409 }
+                )
+            }
         }
 
         // Find invite
@@ -47,6 +64,14 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Organization not found" }, { status: 404 })
         }
 
+        // Determine auth method
+        let authMethod: "classic" | "ii" | "both" = "classic"
+        if (password && iiPrincipal) {
+            authMethod = "both"
+        } else if (iiPrincipal) {
+            authMethod = "ii"
+        }
+
         // Create user
         const user = userStore.create({
             id: generateUserId(),
@@ -54,8 +79,9 @@ export async function POST(request: NextRequest) {
             name,
             role: invite.role,
             orgId: invite.orgId,
-            authMethod: "classic",
-            passwordHash: hashPassword(password),
+            authMethod,
+            passwordHash: password ? hashPassword(password) : undefined,
+            iiPrincipal: iiPrincipal || undefined,
             organizationName: org.name,
             isActive: true,
             invitedBy: invite.invitedBy,

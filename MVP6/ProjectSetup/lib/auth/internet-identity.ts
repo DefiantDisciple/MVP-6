@@ -53,9 +53,15 @@ export async function getPrincipal(): Promise<string | null> {
 export async function loginWithII(): Promise<string | null> {
     const client = await initAuthClient()
 
-    // Get IC host from environment
+    // Get IC host and II canister ID from environment
     const icHost = process.env.NEXT_PUBLIC_IC_HOST || "https://ic0.app"
-    const identityProvider = `${icHost}/identity`
+    const iiCanisterId = process.env.NEXT_PUBLIC_INTERNET_IDENTITY_CANISTER_ID || "rdmx6-jaaaa-aaaaa-aaadq-cai"
+
+    // For local development, use the query parameter format
+    const isLocal = icHost.includes("localhost") || icHost.includes("127.0.0.1")
+    const identityProvider = isLocal
+        ? `http://127.0.0.1:4943?canisterId=${iiCanisterId}`
+        : `https://identity.ic0.app`
 
     return new Promise((resolve, reject) => {
         client.login({

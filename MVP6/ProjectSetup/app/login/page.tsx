@@ -22,7 +22,7 @@ export default function LoginPage() {
   const returnUrl = searchParams.get("returnUrl") || null
   const tabParam = searchParams.get("tab") || null
   const isDemoMode = process.env.NEXT_PUBLIC_ENABLE_AUTH === 'false'
-  const defaultTab = tabParam === "demo" ? "demo" : (isDemoMode ? "demo" : "login")
+  const defaultTab = tabParam || "login"
 
   const handleRealLogin = async (e: React.FormEvent) => {
     e.preventDefault()

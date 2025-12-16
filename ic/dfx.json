@@ -12,6 +12,10 @@
     "audit": {
       "type": "motoko",
       "main": "audit/main.mo"
+    },
+    "internet_identity": {
+      "type": "pull",
+      "id": "rdmx6-jaaaa-aaaaa-aaadq-cai"
     }
   },
   "networks": {
@@ -20,7 +24,9 @@
       "type": "ephemeral"
     },
     "ic": {
-      "providers": ["https://ic0.app"],
+      "providers": [
+        "https://ic0.app"
+      ],
       "type": "persistent"
     }
   }
