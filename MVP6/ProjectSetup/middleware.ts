@@ -56,26 +56,26 @@ export function middleware(request: NextRequest) {
   }
 
   // Role-based route protection
-  // Admin can access all routes
-  if (userRole === "admin") {
+  // ADMIN can access all routes
+  if (userRole === "ADMIN") {
     return NextResponse.next()
   }
 
   // Entity users can only access entity routes
   if (pathname.startsWith("/entity")) {
-    if (userRole !== "entity") {
+    if (userRole !== "ENTITY_ADMIN" && userRole !== "ENTITY_USER") {
       return NextResponse.redirect(new URL(getRoleBasedRedirect(userRole), request.url))
     }
   }
   // Provider users can only access provider routes
   else if (pathname.startsWith("/provider")) {
-    if (userRole !== "provider") {
+    if (userRole !== "PROVIDER_ADMIN" && userRole !== "PROVIDER_USER") {
       return NextResponse.redirect(new URL(getRoleBasedRedirect(userRole), request.url))
     }
   }
-  // Admin routes are admin-only
+  // Admin routes are ADMIN-only
   else if (pathname.startsWith("/admin")) {
-    if (userRole !== "admin") {
+    if (userRole !== "ADMIN") {
       return NextResponse.redirect(new URL(getRoleBasedRedirect(userRole), request.url))
     }
   }
@@ -89,11 +89,13 @@ export function middleware(request: NextRequest) {
 
 function getRoleBasedRedirect(role: string): string {
   switch (role) {
-    case "entity":
+    case "ENTITY_ADMIN":
+    case "ENTITY_USER":
       return "/entity/dashboard"
-    case "provider":
+    case "PROVIDER_ADMIN":
+    case "PROVIDER_USER":
       return "/provider/dashboard"
-    case "admin":
+    case "ADMIN":
       return "/admin/dashboard"
     default:
       return "/login"

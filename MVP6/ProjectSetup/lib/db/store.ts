@@ -3,12 +3,14 @@
  * Replace with real database in production
  */
 
-import { User, Organization, InviteToken } from "@/lib/types"
+import { User, Organization, InviteToken, AuditLog } from "@/lib/types"
+import { hashPassword } from "@/lib/auth/utils"
 
 // In-memory stores
 const users: Map<string, User> = new Map()
 const organizations: Map<string, Organization> = new Map()
 const inviteTokens: Map<string, InviteToken> = new Map()
+const auditLogs: Map<string, AuditLog> = new Map()
 const usersByEmail: Map<string, string> = new Map() // email -> userId
 
 /**
@@ -45,19 +47,20 @@ export function initializeStore() {
     }
     organizations.set(demoProviderOrg.id, demoProviderOrg)
 
-    // Hash for "demo123" password
-    // In production, use bcrypt. For demo: crypto sha256 hash of "demo123"
-    const demoPasswordHash = "d3ad9315b7be5dd53b31a273b3b3aba5defe700808305aa16a3062b76658a791"
+    // Bootstrap founder admin from environment or use default
+    const founderEmail = process.env.FOUNDER_EMAIL || "founder@verdex.systems"
+    const founderPassword = process.env.FOUNDER_PASSWORD || "demo123"
+    const founderPasswordHash = hashPassword(founderPassword)
 
-    // Create founder admin user
+    // Create founder admin user (only ADMIN in the system)
     const founderAdmin: User = {
         id: "user-founder-001",
-        email: "founder@verdex.systems",
+        email: founderEmail,
         name: "Founder Admin",
-        role: "admin",
+        role: "ADMIN",
         orgId: adminOrg.id,
         authMethod: "both", // Can use both Classic and II
-        passwordHash: demoPasswordHash, // Password: demo123
+        passwordHash: founderPasswordHash,
         iiPrincipal: undefined, // Will be set when user links their II
         organizationName: adminOrg.name,
         isActive: true,
@@ -67,38 +70,40 @@ export function initializeStore() {
     users.set(founderAdmin.id, founderAdmin)
     usersByEmail.set(founderAdmin.email, founderAdmin.id)
 
-    // Create demo users for testing (will only see demo data)
+    // Create demo users for testing (demo dashboards)
+    const demoPasswordHash = hashPassword("demo123")
+
     const demoEntity: User = {
         id: "user-entity-demo",
         email: "demo@entity.com",
-        name: "Demo Entity User",
-        role: "entity",
+        name: "Demo Entity Admin",
+        role: "ENTITY_ADMIN",
         orgId: demoEntityOrg.id,
         authMethod: "classic",
-        passwordHash: demoPasswordHash, // Password: demo123
+        passwordHash: demoPasswordHash,
         organizationName: demoEntityOrg.name,
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
     }
     users.set(demoEntity.id, demoEntity)
-    usersByEmail.set(demoEntity.email, demoEntity.id)
+    usersByEmail.set(demoEntity.email.toLowerCase(), demoEntity.id)
 
     const demoProvider: User = {
         id: "user-provider-demo",
         email: "demo@provider.com",
-        name: "Demo Provider User",
-        role: "provider",
+        name: "Demo Provider Admin",
+        role: "PROVIDER_ADMIN",
         orgId: demoProviderOrg.id,
         authMethod: "classic",
-        passwordHash: demoPasswordHash, // Password: demo123
+        passwordHash: demoPasswordHash,
         organizationName: demoProviderOrg.name,
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
     }
     users.set(demoProvider.id, demoProvider)
-    usersByEmail.set(demoProvider.email, demoProvider.id)
+    usersByEmail.set(demoProvider.email.toLowerCase(), demoProvider.id)
 }
 
 // Initialize on module load
@@ -201,7 +206,14 @@ export const inviteStore = {
     },
 
     findByEmail(email: string): InviteToken[] {
-        return Array.from(inviteTokens.values()).filter((inv) => inv.email === email && !inv.isUsed)
+        return Array.from(inviteTokens.values()).filter((inv) => inv.email.toLowerCase() === email.toLowerCase() && !inv.acceptedAt)
+    },
+
+    findPendingByEmail(email: string): InviteToken | undefined {
+        const now = new Date()
+        return Array.from(inviteTokens.values()).find(
+            (inv) => inv.email.toLowerCase() === email.toLowerCase() && !inv.acceptedAt && inv.expiresAt > now
+        )
     },
 
     create(invite: InviteToken): InviteToken {
@@ -209,18 +221,37 @@ export const inviteStore = {
         return invite
     },
 
-    markAsUsed(token: string): InviteToken | undefined {
+    markAsAccepted(token: string): InviteToken | undefined {
         const invite = inviteTokens.get(token)
         if (!invite) return undefined
 
-        invite.isUsed = true
-        invite.usedAt = new Date()
-        inviteTokens.set(token, invite)
-        return invite
+        const accepted = { ...invite, acceptedAt: new Date() }
+        inviteTokens.set(token, accepted)
+        return accepted
     },
 
     list(): InviteToken[] {
         return Array.from(inviteTokens.values())
+    },
+}
+
+/**
+ * Audit log operations
+ */
+export const auditStore = {
+    create(log: AuditLog): AuditLog {
+        auditLogs.set(log.id, log)
+        return log
+    },
+
+    list(limit: number = 100): AuditLog[] {
+        const logs = Array.from(auditLogs.values())
+        return logs.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()).slice(0, limit)
+    },
+
+    findByUserId(userId: string, limit: number = 50): AuditLog[] {
+        const logs = Array.from(auditLogs.values()).filter((log) => log.userId === userId)
+        return logs.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()).slice(0, limit)
     },
 }
 

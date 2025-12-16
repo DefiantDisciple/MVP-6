@@ -1,8 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { cookies } from "next/headers"
-import { userStore } from "@/lib/db/store"
+import { userStore, auditStore } from "@/lib/db/store"
 import { verifyPassword } from "@/lib/auth/utils"
-import { createSessionData } from "@/lib/auth/session"
+import { getRoleDashboard } from "@/lib/auth/permissions"
 
 /**
  * Classic authentication login
@@ -31,11 +31,16 @@ export async function POST(request: NextRequest) {
 
     // Verify password
     if (!user.passwordHash || !verifyPassword(password, user.passwordHash)) {
+      // Log failed login attempt
+      auditStore.create({
+        id: `audit-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        userEmail: email,
+        action: "login_failure",
+        details: "Invalid password",
+        timestamp: new Date(),
+      })
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
     }
-
-    // Create session data (strips sensitive fields)
-    const sessionData = createSessionData(user)
 
     // Set secure HTTP-only cookies
     const cookieStore = await cookies()
@@ -64,7 +69,20 @@ export async function POST(request: NextRequest) {
       path: "/",
     })
 
-    // Return safe user data (no password hash)
+    // Update last login timestamp
+    userStore.update(user.id, { lastLoginAt: new Date() })
+
+    // Log successful login
+    auditStore.create({
+      id: `audit-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      userId: user.id,
+      userEmail: user.email,
+      action: "login_success",
+      details: `User logged in with classic auth`,
+      timestamp: new Date(),
+    })
+
+    // Return safe user data with redirect URL
     return NextResponse.json({
       success: true,
       user: {
@@ -76,6 +94,7 @@ export async function POST(request: NextRequest) {
         organizationName: user.organizationName,
         authMethod: user.authMethod,
       },
+      redirectUrl: getRoleDashboard(user.role),
     })
   } catch (error) {
     console.error("[Auth] Login error:", error)

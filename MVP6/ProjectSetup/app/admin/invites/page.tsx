@@ -19,8 +19,7 @@ interface Invite {
     token: string
     createdAt: string
     expiresAt: string
-    isUsed: boolean
-    usedAt?: string
+    acceptedAt?: string
 }
 
 interface Organization {
@@ -118,13 +117,13 @@ export default function AdminInvitesPage() {
             }
 
             if (createNewOrg) {
-                payload.organizationName = newOrgName
-                payload.organizationType = newOrgType
+                payload.orgName = newOrgName
+                payload.orgType = newOrgType
             } else {
                 payload.orgId = selectedOrgId
             }
 
-            const response = await fetch("/api/auth/invite", {
+            const response = await fetch("/api/invites/create", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
@@ -138,8 +137,24 @@ export default function AdminInvitesPage() {
 
             toast({
                 title: "Invite Sent!",
-                description: `Invitation sent to ${email}`,
+                description: data.warning || `Invitation sent to ${email}`,
             })
+
+            // Show invite link if email failed
+            if (data.inviteLink && data.invite?.token) {
+                const inviteToken = data.invite.token
+                setTimeout(() => {
+                    toast({
+                        title: "Manual Invite Link",
+                        description: "Click to copy invite link",
+                        action: (
+                            <Button variant="outline" size="sm" onClick={() => copyInviteLink(inviteToken)}>
+                                Copy Link
+                            </Button>
+                        ),
+                    })
+                }, 500)
+            }
 
             // Reset form
             setEmail("")
@@ -175,11 +190,11 @@ export default function AdminInvitesPage() {
     }
 
     const getStatusBadge = (invite: Invite) => {
-        if (invite.isUsed) {
+        if (invite.acceptedAt) {
             return (
                 <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                     <CheckCircle className="h-3 w-3" />
-                    Used
+                    Accepted
                 </span>
             )
         }
@@ -248,9 +263,11 @@ export default function AdminInvitesPage() {
                                         <SelectValue placeholder="Select role" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="entity">Entity (Procuring Organization)</SelectItem>
-                                        <SelectItem value="provider">Provider (Service Provider)</SelectItem>
-                                        <SelectItem value="admin">Admin (Platform Administrator)</SelectItem>
+                                        <SelectItem value="ADMIN">Platform Administrator</SelectItem>
+                                        <SelectItem value="ENTITY_ADMIN">Entity Admin</SelectItem>
+                                        <SelectItem value="ENTITY_USER">Entity User</SelectItem>
+                                        <SelectItem value="PROVIDER_ADMIN">Provider Admin</SelectItem>
+                                        <SelectItem value="PROVIDER_USER">Provider User</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -371,15 +388,15 @@ export default function AdminInvitesPage() {
                                             <span>Org: <strong>{invite.organizationName || invite.orgId}</strong></span>
                                             <span>•</span>
                                             <span>Sent: {new Date(invite.createdAt).toLocaleDateString()}</span>
-                                            {invite.isUsed && invite.usedAt && (
+                                            {invite.acceptedAt && (
                                                 <>
                                                     <span>•</span>
-                                                    <span>Used: {new Date(invite.usedAt).toLocaleDateString()}</span>
+                                                    <span>Accepted: {new Date(invite.acceptedAt).toLocaleDateString()}</span>
                                                 </>
                                             )}
                                         </div>
                                     </div>
-                                    {!invite.isUsed && new Date(invite.expiresAt) > new Date() && (
+                                    {!invite.acceptedAt && new Date(invite.expiresAt) > new Date() && (
                                         <Button
                                             variant="outline"
                                             size="sm"

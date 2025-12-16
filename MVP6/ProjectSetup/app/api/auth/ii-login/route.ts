@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { cookies } from "next/headers"
-import { userStore } from "@/lib/db/store"
+import { userStore, auditStore } from "@/lib/db/store"
+import { getRoleDashboard } from "@/lib/auth/permissions"
 
 /**
  * POST: Handle Internet Identity login
@@ -19,9 +20,16 @@ export async function POST(request: NextRequest) {
         let user = userStore.findByIIPrincipal(principal)
 
         if (!user) {
+            // Log failed login attempt
+            auditStore.create({
+                id: `audit-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                action: "login_failure",
+                details: `No account found for II principal: ${principal.substring(0, 20)}...`,
+                timestamp: new Date(),
+            })
             return NextResponse.json(
                 {
-                    error: "No account linked to this Internet Identity",
+                    error: "No account linked to this Internet Identity. You must be invited to access this platform.",
                     needsLinking: true,
                     principal
                 },
@@ -61,7 +69,20 @@ export async function POST(request: NextRequest) {
             path: "/",
         })
 
-        // Return safe user data
+        // Update last login timestamp
+        userStore.update(user.id, { lastLoginAt: new Date() })
+
+        // Log successful login
+        auditStore.create({
+            id: `audit-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            userId: user.id,
+            userEmail: user.email,
+            action: "login_success",
+            details: `User logged in with Internet Identity`,
+            timestamp: new Date(),
+        })
+
+        // Return safe user data with redirect URL
         return NextResponse.json({
             success: true,
             user: {
@@ -73,6 +94,7 @@ export async function POST(request: NextRequest) {
                 organizationName: user.organizationName,
                 authMethod: user.authMethod,
             },
+            redirectUrl: getRoleDashboard(user.role),
         })
     } catch (error) {
         console.error("[Auth] II Login error:", error)

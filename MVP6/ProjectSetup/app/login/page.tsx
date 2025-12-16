@@ -48,12 +48,13 @@ function LoginContent() {
         variant: "default",
       })
 
-      // Redirect based on role or return URL (force full reload for middleware)
-      const userRole = data.user.role
-      if (returnUrl && returnUrl.startsWith(`/${userRole}`)) {
+      // Redirect using URL from API or return URL (force full reload for middleware)
+      if (returnUrl) {
         window.location.href = returnUrl
+      } else if (data.redirectUrl) {
+        window.location.href = data.redirectUrl
       } else {
-        window.location.href = `/${userRole}/dashboard`
+        window.location.href = "/entity/dashboard"  // fallback
       }
     } catch (error: any) {
       toast({
@@ -92,7 +93,7 @@ function LoginContent() {
       })
 
       // Force navigation with full page reload to ensure middleware processes cookies
-      window.location.href = `/${data.user.role}/dashboard`
+      window.location.href = data.redirectUrl || "/entity/dashboard"
     } catch (error) {
       toast({
         title: "Login failed",
@@ -142,12 +143,12 @@ function LoginContent() {
 
       toast({
         title: "Login successful",
-        description: `Welcome back, ${data.user.name}!`,
+        description: `Welcome, ${data.user.name}!`,
         variant: "default",
       })
 
-      // Redirect to dashboard
-      window.location.href = `/${data.user.role}/dashboard`
+      // Redirect based on role using API response
+      window.location.href = data.redirectUrl
     } catch (error: any) {
       console.error("II login error:", error)
       toast({

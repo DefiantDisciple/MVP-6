@@ -1,5 +1,5 @@
-// Core role definition
-export type Role = "entity" | "provider" | "admin"
+// Core role definition - Production roles with granular permissions
+export type Role = "ADMIN" | "ENTITY_ADMIN" | "ENTITY_USER" | "PROVIDER_ADMIN" | "PROVIDER_USER"
 
 // Authentication method
 export type AuthMethod = "classic" | "ii" | "both"
@@ -43,6 +43,7 @@ export interface User {
   address?: string
   isActive: boolean // Account status
   invitedBy?: string // User ID who sent the invite
+  lastLoginAt?: Date // Last successful login timestamp
   createdAt: Date
   updatedAt: Date
 }
@@ -53,12 +54,23 @@ export interface InviteToken {
   email: string
   role: Role
   orgId: string
-  invitedBy: string
-  token: string
+  invitedBy: string // User ID who created the invite
+  token: string // Secure random token (hashed at rest recommended)
   expiresAt: Date
-  isUsed: boolean
-  usedAt?: Date
+  acceptedAt?: Date // When invite was accepted (replaces isUsed/usedAt)
   createdAt: Date
+}
+
+// Audit log for security events
+export interface AuditLog {
+  id: string
+  userId?: string // May be null for failed login attempts
+  userEmail?: string
+  action: "invite_created" | "invite_accepted" | "login_success" | "login_failure" | "role_changed" | "user_deactivated" | "user_activated"
+  details: string
+  ipAddress?: string
+  userAgent?: string
+  timestamp: Date
 }
 
 // Tender

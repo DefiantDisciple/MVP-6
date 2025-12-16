@@ -96,9 +96,9 @@ function AcceptInviteContent() {
                 variant: "default",
             })
 
-            // Redirect to login
+            // Redirect to dashboard (session already created by API)
             setTimeout(() => {
-                router.push("/login")
+                window.location.href = data.redirectUrl || "/entity/dashboard"
             }, 1500)
         } catch (err: any) {
             toast({
@@ -153,9 +153,9 @@ function AcceptInviteContent() {
                 variant: "default",
             })
 
-            // Redirect to login
+            // Redirect to dashboard (session already created by API)
             setTimeout(() => {
-                router.push("/login")
+                window.location.href = data.redirectUrl || "/entity/dashboard"
             }, 1500)
         } catch (err: any) {
             toast({

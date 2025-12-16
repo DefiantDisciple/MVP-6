@@ -1,6 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { userStore, inviteStore, orgStore } from "@/lib/db/store"
+import { cookies } from "next/headers"
+import { userStore, inviteStore, orgStore, auditStore } from "@/lib/db/store"
 import { hashPassword, generateUserId, isValidPassword } from "@/lib/auth/utils"
+import { getRoleDashboard } from "@/lib/auth/permissions"
 
 /**
  * POST: Accept invite and create user account
@@ -42,9 +44,9 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Invalid invite token" }, { status: 404 })
         }
 
-        // Check if invite is used
-        if (invite.isUsed) {
-            return NextResponse.json({ error: "Invite already used" }, { status: 400 })
+        // Check if invite is already accepted
+        if (invite.acceptedAt) {
+            return NextResponse.json({ error: "Invite already accepted" }, { status: 400 })
         }
 
         // Check if invite is expired
@@ -89,8 +91,42 @@ export async function POST(request: NextRequest) {
             updatedAt: new Date(),
         })
 
-        // Mark invite as used
-        inviteStore.markAsUsed(token)
+        // Mark invite as accepted
+        inviteStore.markAsAccepted(token)
+
+        // Log audit event
+        auditStore.create({
+            id: `audit-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            userId: user.id,
+            userEmail: user.email,
+            action: "invite_accepted",
+            details: `User accepted invitation and created account with role ${user.role}`,
+            timestamp: new Date(),
+        })
+
+        // Create session
+        const cookieStore = await cookies()
+        cookieStore.set("user_id", user.id, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 60 * 60 * 24 * 7, // 7 days
+        })
+        cookieStore.set("user_role", user.role, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 60 * 60 * 24 * 7,
+        })
+        cookieStore.set("org_id", user.orgId, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 60 * 60 * 24 * 7,
+        })
+
+        // Update last login
+        userStore.update(user.id, { lastLoginAt: new Date() })
 
         return NextResponse.json({
             success: true,
@@ -102,6 +138,7 @@ export async function POST(request: NextRequest) {
                 orgId: user.orgId,
                 organizationName: user.organizationName,
             },
+            redirectUrl: getRoleDashboard(user.role),
         })
     } catch (error) {
         console.error("[Auth] Accept invite error:", error)
@@ -126,8 +163,9 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: "Invalid invite token" }, { status: 404 })
         }
 
-        if (invite.isUsed) {
-            return NextResponse.json({ error: "Invite already used" }, { status: 400 })
+        // Check if already accepted
+        if (invite.acceptedAt) {
+            return NextResponse.json({ error: "Invite already accepted" }, { status: 400 })
         }
 
         if (invite.expiresAt < new Date()) {
